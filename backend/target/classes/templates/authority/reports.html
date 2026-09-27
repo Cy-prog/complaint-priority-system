@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Executive Grievance Reports</title>
+</head>
+<body>
+<div layout:fragment="content">
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1 text-dark fw-bold"><i class="bi bi-file-earmark-bar-graph text-primary me-2"></i>Executive Intelligence Reports</h3>
+            <p class="text-muted mb-0">90-Day longitudinal civic analytics and statutory resolution performance</p>
+        </div>
+        <div>
+            <button onclick="window.print()" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-printer me-1"></i>Print Report
+            </button>
+            <a th:href="@{/authority/dashboard}" class="btn btn-primary">
+                <i class="bi bi-grid-1x2-fill me-1"></i>Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Summary Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card glass-card text-center p-3">
+                <h6 class="text-muted mb-1">Total Influx</h6>
+                <h3 class="fw-bold mb-0 text-primary" th:text="${summary.totalComplaints}">0</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card glass-card text-center p-3">
+                <h6 class="text-muted mb-1">Resolved Rate</h6>
+                <h3 class="fw-bold mb-0 text-success" th:text="${summary.resolutionRate + '%'}">0%</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card glass-card text-center p-3">
+                <h6 class="text-muted mb-1">SLA Adherence</h6>
+                <h3 class="fw-bold mb-0 text-info" th:text="${summary.slaComplianceRate + '%'}">0%</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card glass-card text-center p-3">
+                <h6 class="text-muted mb-1">AI Confidence Avg</h6>
+                <h3 class="fw-bold mb-0 text-purple" th:text="${summary.avgConfidence + '%'}">0%</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- 90 Days Trend Chart -->
+    <div class="card glass-card mb-4">
+        <div class="card-header fw-bold">
+            <i class="bi bi-graph-up-arrow me-2"></i>Long-Term Grievance Trend (90 Days)
+        </div>
+        <div class="card-body">
+            <canvas id="longTrendChart" height="300"></canvas>
+        </div>
+    </div>
+
+    <!-- Audit Summary Table -->
+    <div class="card glass-card">
+        <div class="card-header fw-bold">
+            <i class="bi bi-clipboard-data me-2"></i>Statutory Performance Metrics
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Metric Indicator</th>
+                            <th>Current Measurement</th>
+                            <th>Benchmark Target</th>
+                            <th>Compliance Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Critical Emergency Response Window</td>
+                            <td>Within 4 Hours</td>
+                            <td>< 4 Hours</td>
+                            <td><span class="badge bg-success">Compliant</span></td>
+                        </tr>
+                        <tr>
+                            <td>High Priority Remediation Time</td>
+                            <td>Within 12 Hours</td>
+                            <td>< 12 Hours</td>
+                            <td><span class="badge bg-success">Compliant</span></td>
+                        </tr>
+                        <tr>
+                            <td>AI Categorization Accuracy Rate</td>
+                            <td th:text="${summary.avgConfidence + '%'}">93%</td>
+                            <td>> 90%</td>
+                            <td><span class="badge bg-success">Exceeds Target</span></td>
+                        </tr>
+                        <tr>
+                            <td>Overall Civic SLA Compliance</td>
+                            <td th:text="${summary.slaComplianceRate + '%'}">95%</td>
+                            <td>> 90%</td>
+                            <td><span class="badge bg-success">Compliant</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<th:block layout:fragment="scripts">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    const trend90 = /*[[${complaintsTrend}]]*/ {};
+    const chartCanvas = document.getElementById('longTrendChart');
+    if (chartCanvas) {
+        new Chart(chartCanvas, {
+            type: 'line',
+            data: {
+                labels: Object.keys(trend90),
+                datasets: [{
+                    label: 'Complaints Influx',
+                    data: Object.values(trend90),
+                    borderColor: '#0284c7',
+                    backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+</script>
+</th:block>
+</body>
+</html>

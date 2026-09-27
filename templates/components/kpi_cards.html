@@ -1,0 +1,89 @@
+<!-- KPI Cards -->
+<div id="kpi-cards" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 mb-6"
+     hx-get="/api/dashboard/summary" hx-trigger="every 30s" hx-swap="outerHTML">
+    
+    <!-- Total Grievances -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 hover:shadow-md transition-all flex flex-col justify-between group">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+            <div>
+                <span class="text-xs font-bold text-slate-800 block">कुल शिकायतें</span>
+                <span class="text-[10px] text-slate-400 uppercase font-semibold">Total Tabled</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-slate-900 font-mono">{{ summary.total_complaints | default(0) }}</div>
+    </div>
+
+    <!-- Critical -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-red-200 hover:shadow-md hover:border-red-400 transition-all flex flex-col justify-between group">
+        <div class="flex items-center justify-between text-red-600 mb-2">
+            <div>
+                <span class="text-xs font-bold text-red-900 block">आपातकालीन</span>
+                <span class="text-[10px] text-red-500 uppercase font-semibold">Critical Hazard</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center badge-glow-red">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-red-600 font-mono">{{ summary.critical_count | default(0) }}</div>
+    </div>
+
+    <!-- High Priority -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-orange-200 hover:shadow-md hover:border-orange-400 transition-all flex flex-col justify-between group">
+        <div class="flex items-center justify-between text-orange-600 mb-2">
+            <div>
+                <span class="text-xs font-bold text-orange-900 block">उच्च प्राथमिकता</span>
+                <span class="text-[10px] text-orange-500 uppercase font-semibold">High Priority</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-orange-600 font-mono">{{ summary.high_count | default(0) }}</div>
+    </div>
+
+    <!-- Pending / Open -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 hover:shadow-md transition-all flex flex-col justify-between group">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+            <div>
+                <span class="text-xs font-bold text-slate-800 block">लंबित / प्रगति पर</span>
+                <span class="text-[10px] text-slate-400 uppercase font-semibold">In Progress</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-slate-800 font-mono">{{ summary.pending_count | default(0) }}</div>
+    </div>
+
+    <!-- Resolved / Closed -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-emerald-200 hover:shadow-md hover:border-emerald-400 transition-all flex flex-col justify-between group">
+        <div class="flex items-center justify-between text-emerald-600 mb-2">
+            <div>
+                <span class="text-xs font-bold text-emerald-900 block">निस्तारित कार्य</span>
+                <span class="text-[10px] text-emerald-500 uppercase font-semibold">Resolved</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-emerald-600 font-mono">{{ summary.resolved_count | default(0) }}</div>
+    </div>
+
+    <!-- SLA Breaches -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-red-300 hover:shadow-md bg-red-50/40 transition-all flex flex-col justify-between group">
+        <div class="flex items-center justify-between text-red-600 mb-2">
+            <div>
+                <span class="text-xs font-bold text-red-900 block">SLA उल्लंघन</span>
+                <span class="text-[10px] text-red-500 uppercase font-semibold">SLA Breached</span>
+            </div>
+            <div class="w-8 h-8 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-black text-red-700 font-mono">{{ summary.sla_breach_count | default(0) }}</div>
+    </div>
+
+</div>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Manage Complaints</title></head>
+<body>
+<div layout:fragment="content">
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="bi bi-inbox-fill me-2"></i>Complaints</h3>
+    </div>
+
+    <!-- Filters -->
+    <div class="card glass-card mb-3">
+        <div class="card-body py-2">
+            <form th:action="@{/admin/complaints}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search tickets, descriptions, names..."
+                           th:value="${search}">
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option th:each="s : ${T(com.civic.complaint.entity.ComplaintStatus).values()}"
+                                th:value="${s}" th:text="${s}" th:selected="${s.name() == selectedStatus}">S</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="priority" class="form-select">
+                        <option value="">All Priority</option>
+                        <option th:each="p : ${T(com.civic.complaint.entity.Priority).values()}"
+                                th:value="${p}" th:text="${p}" th:selected="${p.name() == selectedPriority}">P</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
+                </div>
+                <div class="col-md-2">
+                    <a th:href="@{/admin/complaints}" class="btn btn-outline-secondary w-100">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card glass-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ticket</th>
+                            <th>Citizen</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Department</th>
+                            <th>Filed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${complaints.content}">
+                            <td><a th:href="@{/admin/complaint/{id}(id=${c.ticketId})}" class="ticket-link" th:text="${c.ticketId}">T</a></td>
+                            <td th:text="${c.citizenName ?: 'Anonymous'}">Name</td>
+                            <td class="text-truncate" style="max-width:250px" th:text="${c.description}">D</td>
+                            <td><span class="badge bg-info" th:text="${c.category ?: '—'}">C</span></td>
+                            <td>
+                                <span th:if="${c.priority}" class="priority-badge"
+                                      th:classappend="'priority-' + ${c.priority.name().toLowerCase()}"
+                                      th:text="${c.priority}">P</span>
+                            </td>
+                            <td><span class="status-badge" th:classappend="'status-' + ${c.status.name().toLowerCase()}" th:text="${c.status}">S</span></td>
+                            <td th:text="${c.assignedDepartment?.name ?: '—'}">Dept</td>
+                            <td th:text="${#temporals.format(c.createdAt, 'dd MMM HH:mm')}">D</td>
+                            <td><a th:href="@{/admin/complaint/{id}(id=${c.ticketId})}" class="btn btn-sm btn-outline-primary">Manage</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Pagination -->
+        <div class="card-footer" th:if="${complaints.totalPages > 1}">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${complaints.first ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/admin/complaints(page=${complaints.number - 1}, search=${search})}">Prev</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, complaints.totalPages - 1)}"
+                        th:classappend="${i == complaints.number ? 'active' : ''}">
+                        <a class="page-link" th:href="@{/admin/complaints(page=${i}, search=${search})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${complaints.last ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/admin/complaints(page=${complaints.number + 1}, search=${search})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

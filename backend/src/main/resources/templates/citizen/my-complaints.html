@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>My Complaints</title></head>
+<body>
+<div layout:fragment="content">
+<div class="container py-4">
+    <h3 class="mb-4"><i class="bi bi-folder2-open me-2"></i>My Complaints</h3>
+
+    <div th:if="${complaints != null and !complaints.isEmpty()}" class="card glass-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Topic</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Filed</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${complaints}">
+                            <td><a th:href="@{/citizen/complaint/{id}(id=${c.ticketId})}" class="ticket-link" th:text="${c.ticketId}">GWA-1234</a></td>
+                            <td th:text="${c.topic ?: c.description.substring(0, T(Math).min(50, c.description.length())) + '...'}">Topic</td>
+                            <td><span class="badge bg-info" th:text="${c.category ?: 'Pending'}">Cat</span></td>
+                            <td>
+                                <span th:if="${c.priority}" class="priority-badge"
+                                      th:classappend="'priority-' + ${c.priority.name().toLowerCase()}"
+                                      th:text="${c.priority}">P</span>
+                                <span th:unless="${c.priority}" class="badge bg-secondary">Pending</span>
+                            </td>
+                            <td><span class="status-badge" th:classappend="'status-' + ${c.status.name().toLowerCase()}" th:text="${c.status}">S</span></td>
+                            <td th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy')}">Date</td>
+                            <td><a th:href="@{/citizen/complaint/{id}(id=${c.ticketId})}" class="btn btn-sm btn-outline-primary">View</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${complaints == null or complaints.isEmpty()}" class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h5 class="mt-3 text-muted">No complaints found</h5>
+        <a th:href="@{/citizen/submit}" class="btn btn-accent mt-2">File Your First Complaint</a>
+    </div>
+</div>
+</div>
+</body>
+</html>

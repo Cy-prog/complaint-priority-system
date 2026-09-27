@@ -1,0 +1,95 @@
+<header class="glass-nav h-16 flex items-center px-4 md:px-6 justify-between z-20 shrink-0">
+    <div class="flex items-center space-x-3">
+        <!-- Mobile Menu Toggle -->
+        <button class="md:hidden text-slate-500 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100" @click="sidebarOpen = true">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        
+        <div>
+            <h1 class="text-lg md:text-xl font-bold text-slate-900 leading-tight">{% block page_title %}{% endblock %}</h1>
+            <p class="text-[11px] text-slate-500 hidden sm:block">JanSamadhan AI • ग्वालियर जन समाधान | नगर निगम व जिला प्रशासन</p>
+        </div>
+
+        <!-- Role Badge -->
+        {% if user %}
+            {% if user.role == 'admin' %}
+            <span class="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 mr-1.5 animate-pulse"></span>
+                🏛️ जिला प्रशासन व GMC (Apex Authority)
+            </span>
+            {% elif user.role == 'operator' %}
+            <span class="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-600 mr-1.5"></span>
+                👷‍♂️ जोनल व वार्ड अधिकारी (Field Operations)
+            </span>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    <div class="flex items-center space-x-2 md:space-x-3">
+        
+        <!-- Quick Persona Switcher for Pitch/Demo -->
+        <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" @click.outside="open = false" class="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition">
+                <svg class="w-3.5 h-3.5 mr-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                <span class="hidden sm:inline">भूमिका बदलें (Switch Persona)</span>
+                <span class="sm:hidden">Switch</span>
+                <svg class="w-3 h-3 ml-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div x-show="open" x-cloak class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
+                <div class="px-3 py-1.5 border-b border-slate-100">
+                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">डेमो के लिए भूमिका चुनें (Quick Demo Roles):</p>
+                </div>
+                
+                <!-- Role 1: Citizen -->
+                <a href="/switch-persona/citizen" class="flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-orange-50 hover:text-orange-900 transition">
+                    <div class="w-7 h-7 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center mr-2.5 text-sm">👨‍👩‍👧</div>
+                    <div>
+                        <p class="font-bold">नागरिक पोर्टल (Citizen)</p>
+                        <p class="text-[10px] text-slate-500">बिना लॉगिन शिकायत दर्ज व ट्रैक करें</p>
+                    </div>
+                </a>
+
+                <!-- Role 2: Operator -->
+                <a href="/switch-persona/operator" class="flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-amber-50 hover:text-amber-900 transition">
+                    <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center mr-2.5 text-sm">👷‍♂️</div>
+                    <div>
+                        <p class="font-bold">फील्ड अधिकारी (Field Officer)</p>
+                        <p class="text-[10px] text-slate-500">वार्ड निवारण व फोटो अपलोड</p>
+                    </div>
+                </a>
+
+                <!-- Role 3: Apex Admin -->
+                <a href="/switch-persona/admin" class="flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-indigo-50 hover:text-indigo-900 transition">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center mr-2.5 text-sm">🏛️</div>
+                    <div>
+                        <p class="font-bold">उच्च अधिकारी / BDO (Apex)</p>
+                        <p class="text-[10px] text-slate-500">ग्राम सभा रिपोर्ट, आउटब्रेक अलर्ट</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Open Citizen Portal Directly -->
+        <a href="/portal" target="_blank" class="hidden sm:inline-flex items-center px-3 py-1.5 text-xs font-bold text-orange-700 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition shadow-sm">
+            <span>नागरिक पोर्टल</span>
+            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+
+        <!-- User Profile & Logout -->
+        {% if user %}
+        <div class="flex items-center pl-2 border-l border-slate-200 space-x-2">
+            <div class="text-right hidden md:block">
+                <p class="text-xs font-bold text-slate-800">{{ user.full_name or user.username }}</p>
+                <p class="text-[10px] text-slate-500 capitalize">{{ user.role }}</p>
+            </div>
+            <a href="/logout" title="Sign out" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="px-3 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-sm">लॉगिन</a>
+        {% endif %}
+    </div>
+</header>

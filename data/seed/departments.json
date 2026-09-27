@@ -1,0 +1,13 @@
+[
+  {"name": "Water Department", "description": "Water supply and distribution", "contact_email": "water@example.gov", "is_active": true},
+  {"name": "Electricity Department", "description": "Power supply and electrical infrastructure", "contact_email": "electricity@example.gov", "is_active": true},
+  {"name": "Public Works", "description": "Roads, drainage, and infrastructure", "contact_email": "publicworks@example.gov", "is_active": true},
+  {"name": "Sanitation Department", "description": "Sanitation and waste management", "contact_email": "sanitation@example.gov", "is_active": true},
+  {"name": "Transport Department", "description": "Public transport services", "contact_email": "transport@example.gov", "is_active": true},
+  {"name": "Safety Department", "description": "Public safety and security", "contact_email": "safety@example.gov", "is_active": true},
+  {"name": "Health Department", "description": "Healthcare services and facilities", "contact_email": "health@example.gov", "is_active": true},
+  {"name": "Education Department", "description": "Schools and educational services", "contact_email": "education@example.gov", "is_active": true},
+  {"name": "Environmental Services", "description": "Environmental protection", "contact_email": "environment@example.gov", "is_active": true},
+  {"name": "Finance Department", "description": "Financial and payment services", "contact_email": "finance@example.gov", "is_active": true},
+  {"name": "Administrative Services", "description": "General administrative services", "contact_email": "admin@example.gov", "is_active": true}
+]

@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+
+{% block title %}ग्वालियर GIS स्थानिक शिकायत मानचित्र | Gwalior Smart GIS Map - JanSamadhan AI{% endblock %}
+{% block page_title %}ग्वालियर नगर निगम स्थानिक शिकायत मानचित्र (Gwalior Smart City GIS Map){% endblock %}
+
+{% block extra_head %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    #map { 
+        height: calc(100vh - 210px); 
+        min-height: 540px; 
+        z-index: 10; 
+        border-radius: 1.25rem;
+        background: #f1f5f9;
+    }
+    .leaflet-popup-content-wrapper { 
+        border-radius: 1rem; 
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+        padding: 0;
+        overflow: hidden;
+    }
+    .leaflet-popup-content {
+        margin: 0 !important;
+        line-height: 1.4;
+    }
+    .custom-div-icon { border: none; background: transparent; }
+
+    /* Radar Beacon for Critical Hazards */
+    @keyframes radar-pulse {
+        0% { transform: scale(0.8); opacity: 0.9; }
+        60% { transform: scale(2.4); opacity: 0.15; }
+        100% { transform: scale(2.8); opacity: 0; }
+    }
+    .radar-ring {
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(220, 38, 38, 0.5);
+        animation: radar-pulse 1.8s infinite ease-out;
+        pointer-events: none;
+        top: -10px;
+        left: -10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+    
+    <!-- Top Filter & Metric Bar -->
+    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+        <div>
+            <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h3 class="text-sm font-black text-slate-900">
+                    ग्वालियर नगर निगम — वास्तविक समय वार्ड शिकायत फैलाव (Gwalior Live GIS Ward Map)
+                </h3>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">लश्कर, मुरार, हजीरा, थाटीपुर व सिटी सेंटर के 66 वार्डों का लाइव AI स्थानिक विश्लेषण।</p>
+        </div>
+
+        <!-- Filter Controls & Layer Switchers -->
+        <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
+            <!-- Map Base Layer Select -->
+            <div class="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button type="button" onclick="switchBaseLayer('voyager')" id="btnLayerVoyager" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm font-bold transition">
+                    🗺️ नगरीय मैप
+                </button>
+                <button type="button" onclick="switchBaseLayer('satellite')" id="btnLayerSatellite" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+                    🛰️ उपग्रह (Satellite)
+                </button>
+                <button type="button" onclick="switchBaseLayer('osm')" id="btnLayerOSM" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+                    🏛️ मानक OSM
+                </button>
+            </div>
+
+            <!-- Priority Filter -->
+            <div class="flex items-center space-x-2">
+                <select id="priorityFilter" onchange="filterMarkers()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-800 font-bold focus:ring-2 focus:ring-orange-500">
+                    <option value="ALL">सभी प्राथमिकताएं (All)</option>
+                    <option value="CRITICAL">🔴 केवल आपातकालीन (CRITICAL)</option>
+                    <option value="HIGH">🟠 केवल उच्च (HIGH)</option>
+                    <option value="MEDIUM">🟡 मध्यम (MEDIUM)</option>
+                    <option value="LOW">🟢 सामान्य (LOW)</option>
+                </select>
+            </div>
+
+            <span class="bg-slate-900 text-white px-3.5 py-2 rounded-xl font-mono text-xs shadow-sm flex items-center">
+                शिकायतें: <strong id="markerCount" class="text-amber-400 font-bold ml-1.5">0</strong>
+            </span>
+        </div>
+    </div>
+
+    <!-- Quick Landmark Center Bar -->
+    <div class="flex items-center space-x-2 overflow-x-auto pb-1 text-xs font-bold text-slate-700">
+        <span class="text-slate-400 text-[11px] uppercase tracking-wider whitespace-nowrap">ग्वालियर प्रमुख स्थल:</span>
+        <button onclick="flyToLocation(26.2045, 78.1578, 15)" class="px-3 py-1 rounded-full bg-white hover:bg-orange-50 hover:text-orange-700 border border-slate-200 shadow-sm transition whitespace-nowrap">
+            🏛️ महाराज बाड़ा (Lashkar)
+        </button>
+        <button onclick="flyToLocation(26.2350, 78.1760, 15)" class="px-3 py-1 rounded-full bg-white hover:bg-orange-50 hover:text-orange-700 border border-slate-200 shadow-sm transition whitespace-nowrap">
+            🏭 हजीरा चौराहा
+        </button>
+        <button onclick="flyToLocation(26.2230, 78.2180, 15)" class="px-3 py-1 rounded-full bg-white hover:bg-orange-50 hover:text-orange-700 border border-slate-200 shadow-sm transition whitespace-nowrap">
+            🏘️ थाटीपुर / मुरार
+        </button>
+        <button onclick="flyToLocation(26.2025, 78.1925, 15)" class="px-3 py-1 rounded-full bg-white hover:bg-orange-50 hover:text-orange-700 border border-slate-200 shadow-sm transition whitespace-nowrap">
+            🏢 सिटी सेंटर / कलेक्ट्रेट
+        </button>
+        <button onclick="flyToLocation(26.2310, 78.1690, 15)" class="px-3 py-1 rounded-full bg-white hover:bg-orange-50 hover:text-orange-700 border border-slate-200 shadow-sm transition whitespace-nowrap">
+            🏰 ग्वालियर किला गेट
+        </button>
+        <button onclick="resetGwaliorView()" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition whitespace-nowrap">
+            🔄 पूरा ग्वालियर देखें
+        </button>
+    </div>
+
+    <!-- Map Container -->
+    <div class="bg-white p-2 sm:p-2.5 rounded-3xl shadow-md border border-slate-200 relative overflow-hidden">
+        <div id="map"></div>
+
+        <!-- Floating Map Legend -->
+        <div class="absolute bottom-6 right-6 z-[1000] bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-slate-200 text-xs font-semibold space-y-1.5 pointer-events-auto">
+            <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1.5 font-black border-b border-slate-100 pb-1">
+                प्राथमिकता संकेत (Priority Legend)
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-red-600 ring-2 ring-red-300 animate-ping inline-block"></span>
+                <span class="font-bold text-red-700">CRITICAL (आपातकालीन खतरा)</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+                <span>HIGH (उच्च प्राथमिकता)</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                <span>MEDIUM (मध्यम)</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                <span>LOW (सामान्य)</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    const pointsData = {{ map_points | tojson }};
+    const GWALIOR_CENTER = [26.2183, 78.1828];
+    let map;
+    let markersLayer;
+    let currentTileLayer;
+    
+    // Available Base Tile Layers
+    const tileLayers = {
+        voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            subdomains: 'abcd',
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+        }),
+        satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }),
+        osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        })
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Leaflet Map centered on Gwalior
+        map = L.map('map', {
+            center: GWALIOR_CENTER,
+            zoom: 13,
+            zoomControl: true,
+            scrollWheelZoom: true
+        });
+
+        // Set primary layer to Voyager (fast, crisp, high quality)
+        currentTileLayer = tileLayers.voyager;
+        currentTileLayer.addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+
+        // Fix Leaflet tile loading / grey patchwork bug: force container resize recalculation
+        function fixMapSize() {
+            if (map) {
+                map.invalidateSize(true);
+            }
+        }
+        window.addEventListener('resize', fixMapSize);
+        setTimeout(fixMapSize, 100);
+        setTimeout(fixMapSize, 300);
+        setTimeout(fixMapSize, 700);
+
+        renderMarkers("ALL");
+    });
+
+    function switchBaseLayer(type) {
+        if (!map) return;
+        
+        // Remove current layer
+        if (currentTileLayer) {
+            map.removeLayer(currentTileLayer);
+        }
+
+        // Add selected layer
+        if (tileLayers[type]) {
+            currentTileLayer = tileLayers[type];
+            currentTileLayer.addTo(map);
+        }
+
+        // Update button UI
+        ['Voyager', 'Satellite', 'OSM'].forEach(btn => {
+            const el = document.getElementById('btnLayer' + btn);
+            if (el) {
+                if (btn.toLowerCase() === type.toLowerCase()) {
+                    el.className = "px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm font-bold transition";
+                } else {
+                    el.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
+                }
+            }
+        });
+
+        setTimeout(() => map.invalidateSize(), 150);
+    }
+
+    function flyToLocation(lat, lng, zoom) {
+        if (map) {
+            map.flyTo([lat, lng], zoom || 15, { duration: 1.2 });
+        }
+    }
+
+    function resetGwaliorView() {
+        if (map) {
+            map.flyTo(GWALIOR_CENTER, 13, { duration: 1.0 });
+        }
+    }
+
+    function getPriorityColor(priority) {
+        switch(priority) {
+            case 'CRITICAL': return '#dc2626'; // Red
+            case 'HIGH': return '#ea580c';     // Orange
+            case 'MEDIUM': return '#eab308';   // Yellow
+            default: return '#10b981';         // Green
+        }
+    }
+
+    function renderMarkers(selectedPriority) {
+        markersLayer.clearLayers();
+        let count = 0;
+        let bounds = [];
+
+        pointsData.forEach(pt => {
+            if (selectedPriority !== "ALL" && pt.priority !== selectedPriority) {
+                return;
+            }
+
+            count++;
+            const color = getPriorityColor(pt.priority);
+            const isCritical = pt.priority === 'CRITICAL';
+
+            let marker;
+            if (isCritical) {
+                // Custom animated beacon marker for Critical complaints
+                const beaconIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `
+                        <div class="relative flex items-center justify-center">
+                            <div class="radar-ring"></div>
+                            <div class="w-4 h-4 rounded-full bg-red-600 border-2 border-white shadow-lg ring-2 ring-red-400"></div>
+                        </div>
+                    `,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                marker = L.marker([pt.lat, pt.lng], { icon: beaconIcon });
+            } else {
+                marker = L.circleMarker([pt.lat, pt.lng], {
+                    radius: pt.priority === 'HIGH' ? 8 : 7,
+                    fillColor: color,
+                    color: '#ffffff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                });
+            }
+
+            const photoHtml = pt.photo ? `
+                <div class="mt-2.5">
+                    <img src="${pt.photo}" class="w-full h-28 object-cover rounded-lg border border-slate-200 shadow-inner"/>
+                </div>
+            ` : '';
+
+            const popupContent = `
+                <div class="text-slate-800 text-xs overflow-hidden max-w-xs">
+                    <div class="px-4 py-2.5 bg-slate-900 text-white flex justify-between items-center">
+                        <span class="font-mono text-xs font-black text-amber-400">#${pt.id}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase text-white" style="background-color: ${color}">
+                            ${pt.priority}
+                        </span>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <div class="text-slate-900 font-bold text-xs flex items-center">
+                            <span class="mr-1">📍</span> ${pt.ward}${pt.area ? ' (' + pt.area + ')' : ''}
+                        </div>
+                        <div class="text-[11px] text-slate-500 font-medium">
+                            श्रेणी: <strong>${pt.category}</strong>
+                        </div>
+                        <p class="text-slate-700 text-xs leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-200 line-clamp-3">${pt.title}</p>
+                        ${photoHtml}
+                        <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-[11px]">
+                            <span class="text-slate-400 font-mono">${pt.date}</span>
+                            <a href="/complaints/${pt.id}" class="font-bold text-orange-600 hover:text-orange-700 flex items-center">
+                                कार्रवाई देखें &rarr;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            marker.bindPopup(popupContent, { maxWidth: 300 });
+            markersLayer.addLayer(marker);
+            bounds.push([pt.lat, pt.lng]);
+        });
+
+        document.getElementById('markerCount').innerText = count;
+
+        if (bounds.length > 0 && map && selectedPriority !== "ALL") {
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        }
+    }
+
+    function filterMarkers() {
+        const selected = document.getElementById('priorityFilter').value;
+        renderMarkers(selected);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% from 'components/priority_badge.html' import priority_badge, status_badge, confidence_indicator %}
+{% from 'components/score_bars.html' import score_bars_panel %}
+
+{% block title %}शिकायत #{{ complaint.complaint_id }} | JanSamadhan AI{% endblock %}
+{% block page_title %}शिकायत विस्तृत विवरण (Complaint Dossier){% endblock %}
+
+{% block content %}
+<div class="mb-5 flex flex-wrap justify-between items-center gap-3">
+    <a href="/complaints" class="inline-flex items-center text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm transition">
+        <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        शिकायत सूची पर वापस (Back to Registry)
+    </a>
+    
+    <div class="flex items-center space-x-2">
+        <a href="/portal/receipt/{{ complaint.complaint_id }}" target="_blank" class="inline-flex items-center text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl transition">
+            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            पावती रसीद (Print Slip)
+        </a>
+        <a href="/portal/track?q={{ complaint.complaint_id }}" target="_blank" class="inline-flex items-center text-xs font-bold text-orange-700 bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-xl transition">
+            नागरिक ट्रैकर (Public View)
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Content -->
+    <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Card 1: Info -->
+        <div class="bg-white shadow-sm rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">टोकन ID:</span>
+                    <span class="text-lg font-black text-slate-900 font-mono tracking-wide">{{ complaint.complaint_id | default('N/A') }}</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    {{ priority_badge(complaint.analysis.priority if complaint.analysis else 'UNKNOWN') }}
+                    {{ status_badge(complaint.status) }}
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">समस्या विवरण (Complaint Description)</h3>
+                    <p class="text-slate-900 text-sm whitespace-pre-wrap bg-slate-50 p-4 rounded-xl border border-slate-200 leading-relaxed">{{ complaint.complaint_text | default('No content provided.') }}</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">Complainant Info</h3>
+                        <div class="text-sm text-gray-900">
+                            <p><span class="font-medium">Name:</span> {{ complaint.complainant_name | default('Anonymous') }}</p>
+                            <p><span class="font-medium">Contact:</span> {{ complaint.complainant_contact | default('Not provided') }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">Location</h3>
+                        <div class="text-sm text-gray-900">
+                            <p>{{ complaint.area | default('') }}{{ ', ' if complaint.area else '' }}{{ complaint.ward | default('') }}</p>
+                            <p>{{ complaint.city | default('') }}, {{ complaint.state | default('') }} {{ complaint.pincode | default('') }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">Classification</h3>
+                        <div class="text-sm text-gray-900 space-y-1">
+                            <p><span class="font-medium">Category:</span> <span class="bg-gray-100 px-2 py-1 rounded text-xs">{{ complaint.category.name if complaint.category else 'Uncategorized' }}</span></p>
+                            <p><span class="font-medium">Department:</span> {{ complaint.assigned_department.name if complaint.assigned_department else 'Unassigned' }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">Timeline</h3>
+                        <div class="text-sm text-gray-900">
+                            <p><span class="font-medium">Created:</span> {{ complaint.created_at | default('N/A') }}</p>
+                            <p><span class="font-medium">Updated:</span> {{ complaint.updated_at | default('N/A') }}</p>
+                            {% if complaint.resolved_at %}
+                            <p><span class="font-medium text-green-600">Resolved:</span> {{ complaint.resolved_at }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if complaint.evidence_photo or complaint.resolution_photo or complaint.citizen_feedback_status %}
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-3">Verification & Ground Evidence</h3>
+                    
+                    {% if complaint.citizen_feedback_status %}
+                    <div class="mb-4 p-3 rounded-md {{ 'bg-green-50 border border-green-200' if complaint.citizen_feedback_status == 'satisfied' else 'bg-red-50 border border-red-200' }}">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold uppercase tracking-wider {{ 'text-green-800' if complaint.citizen_feedback_status == 'satisfied' else 'text-red-800' }}">
+                                Citizen Verification: {{ complaint.citizen_feedback_status }}
+                            </span>
+                            {% if complaint.reopen_count and complaint.reopen_count > 0 %}
+                            <span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded">
+                                Reopened: {{ complaint.reopen_count }} times
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% if complaint.evidence_photo %}
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <p class="text-xs font-medium text-gray-700 mb-2">📸 Citizen Ground Photo</p>
+                            <a href="{{ complaint.evidence_photo }}" target="_blank" class="block group relative overflow-hidden rounded">
+                                <img src="{{ complaint.evidence_photo }}" alt="Evidence Photo" class="w-full h-44 object-cover group-hover:opacity-90 transition rounded border border-gray-300">
+                                <div class="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs py-1 px-2 text-center opacity-0 group-hover:opacity-100 transition">Click to view full photo</div>
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if complaint.resolution_photo %}
+                        <div class="bg-gray-50 p-3 rounded-lg border border-green-200 bg-green-50/30">
+                            <p class="text-xs font-medium text-green-800 mb-2">✅ Officer Resolution Proof Photo</p>
+                            <a href="{{ complaint.resolution_photo }}" target="_blank" class="block group relative overflow-hidden rounded">
+                                <img src="{{ complaint.resolution_photo }}" alt="Resolution Proof" class="w-full h-44 object-cover group-hover:opacity-90 transition rounded border border-green-300">
+                                <div class="absolute bottom-0 inset-x-0 bg-black/60 text-white text-xs py-1 px-2 text-center opacity-0 group-hover:opacity-100 transition">Click to view full photo</div>
+                            </a>
+                            {% if complaint.resolution_notes %}
+                            <div class="mt-2 text-xs text-gray-700 bg-white p-2 rounded border border-gray-200">
+                                <span class="font-semibold text-gray-900">Officer Report:</span> {{ complaint.resolution_notes }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Card 2 & 3: AI Analysis & Explanation -->
+        {% if complaint.analysis %}
+        <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-blue-50 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    <h2 class="text-lg font-medium text-blue-900">AI Analysis</h2>
+                </div>
+                {{ confidence_indicator(complaint.analysis.confidence) }}
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left: Scores -->
+                    <div>
+                        <div class="flex items-end space-x-3 mb-6">
+                            {{ priority_badge(complaint.analysis.priority) }}
+                            <span class="text-2xl font-bold text-gray-900">{{ complaint.analysis.priority_score | default(0) }}<span class="text-sm text-gray-500 font-normal">/100</span></span>
+                        </div>
+                        
+                        {{ score_bars_panel(complaint.analysis) }}
+                        
+                        <div class="mt-6 flex space-x-4">
+                            <div class="bg-gray-50 rounded p-3 flex-1 text-center">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Sentiment</p>
+                                <p class="text-sm font-semibold text-gray-900 capitalize">{{ complaint.analysis.sentiment | default('Neutral') }}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded p-3 flex-1 text-center">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Risk Level</p>
+                                <p class="text-sm font-semibold text-gray-900 capitalize">{{ complaint.analysis.risk_level | default('Low') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Explanation -->
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900 mb-2">Reasoning</h3>
+                            <p class="text-sm text-gray-700 bg-blue-50/50 p-4 rounded-lg border border-blue-100">{{ complaint.analysis.reasoning_summary | default('No reasoning provided.') }}</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900 mb-2">Key Issues</h3>
+                            <ul class="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                                {% for issue in complaint.analysis.key_issues | default([]) %}
+                                <li>{{ issue }}</li>
+                                {% else %}
+                                <li class="text-gray-500 italic">None identified</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        {% if complaint.analysis.recommended_action %}
+                        <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                            <h3 class="text-sm font-bold text-green-800 mb-1">Recommended Action</h3>
+                            <p class="text-sm text-green-700">{{ complaint.analysis.recommended_action }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Card 4: Similar Complaints -->
+        <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden" hx-get="/api/complaints/{{ complaint.complaint_id }}/similar" hx-trigger="load">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-medium text-gray-900">Similar Complaints</h2>
+                {% if complaint.analysis and complaint.analysis.duplicate_probability %}
+                <span class="text-sm text-gray-500">Duplicate Prob: <span class="font-medium {{ 'text-red-600' if complaint.analysis.duplicate_probability > 0.7 else 'text-gray-900' }}">{{ (complaint.analysis.duplicate_probability * 100) | round | int }}%</span></span>
+                {% endif %}
+            </div>
+            <div id="similar-complaints-container" class="p-6">
+                <!-- Loaded via HTMX -->
+                <div class="flex justify-center items-center py-4">
+                    <svg class="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="ml-2 text-sm text-gray-500">Finding similar complaints...</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="lg:col-span-1 space-y-6">
+        
+        <!-- Card 5: Actions -->
+        <div class="bg-white shadow-sm rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center">
+                    <span class="w-2.5 h-2.5 rounded-full bg-orange-500 mr-2"></span>
+                    कार्यवाही व समाधान (Operations)
+                </h2>
+                <span class="text-[11px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">अधिकारी पैनल</span>
+            </div>
+            <div class="p-4 space-y-4">
+                
+                <!-- Resolve with Proof Photo (Primary Action for Field Officers) -->
+                <div x-data="{ open: true }" class="border-2 border-emerald-300 rounded-xl overflow-hidden bg-emerald-50/20">
+                    <button @click="open = !open" class="w-full px-4 py-3 bg-emerald-100/60 flex justify-between items-center text-xs font-bold text-emerald-950 hover:bg-emerald-100 transition">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            स्थल समाधान व फोटो अपलोड (Resolve with Proof)
+                        </span>
+                        <svg class="w-4 h-4 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" class="p-4 bg-white border-t border-emerald-200 space-y-3">
+                        <form action="/complaints/{{ complaint.complaint_id }}/resolve" method="POST" enctype="multipart/form-data" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">कार्य-प्रमाण फोटो (Work Proof Photo)</label>
+                                <input type="file" name="resolution_photo_file" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer">
+                                <p class="text-[10px] text-slate-500 mt-1">स्थल पर किया गया सुधार दिखाने वाली तस्वीर अपलोड करें।</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">कार्य विवरण / आख्या (Resolution Notes) *</label>
+                                <textarea name="resolution_notes" rows="2" required placeholder="उदा. पाइपलाइन की मरम्मत कर वाल्व बदल दिया गया और जलापूर्ति बहाल की गई..." class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-emerald-500 focus:border-emerald-500 text-xs text-slate-900"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 shadow-md transition flex items-center justify-center">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                समस्या को "निस्तारित" करें व फोटो जमा करें
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Status Update -->
+                <div x-data="{ open: false }" class="border border-slate-200 rounded-xl overflow-hidden">
+                    <button @click="open = !open" class="w-full px-4 py-2.5 bg-slate-50 flex justify-between items-center text-xs font-bold text-slate-800 hover:bg-slate-100 transition">
+                        <span>स्थिति बदलें (Change Status)</span>
+                        <svg class="w-4 h-4 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" class="p-4 bg-white border-t border-slate-200 space-y-3">
+                        <form hx-put="/api/complaints/{{ complaint.complaint_id }}" hx-swap="none" class="space-y-3">
+                            <select name="status" class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs text-slate-800">
+                                <option value="open">खुली (Open)</option>
+                                <option value="in_progress">प्रगति पर (In Progress)</option>
+                                <option value="resolved">निस्तारित (Resolved)</option>
+                                <option value="closed">सत्यापित व बंद (Closed)</option>
+                                <option value="rejected">अस्वीकृत (Rejected)</option>
+                            </select>
+                            <textarea name="notes" rows="2" placeholder="आंतरिक टिप्पणी (Optional notes)" class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs"></textarea>
+                            <button type="submit" class="w-full py-2 px-4 border border-transparent shadow-sm text-xs font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 transition">स्थिति अपडेट करें</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Priority Override (Apex Admin Feature) -->
+                <div x-data="{ open: false }" class="border border-slate-200 rounded-xl overflow-hidden">
+                    <button @click="open = !open" class="w-full px-4 py-2.5 bg-slate-50 flex justify-between items-center text-xs font-bold text-slate-800 hover:bg-slate-100 transition">
+                        <span>प्राथमिकता अधिरोहण (Override AI Priority)</span>
+                        <svg class="w-4 h-4 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" class="p-4 bg-white border-t border-slate-200 space-y-3">
+                        <form hx-post="/api/complaints/{{ complaint.complaint_id }}/override" hx-swap="none" class="space-y-3">
+                            <select name="new_priority" required class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs text-slate-800">
+                                <option value="CRITICAL">🔴 CRITICAL (आपातकालीन)</option>
+                                <option value="HIGH">🟠 HIGH (उच्च)</option>
+                                <option value="MEDIUM">🟡 MEDIUM (मध्यम)</option>
+                                <option value="LOW">🟢 LOW (सामान्य)</option>
+                            </select>
+                            <textarea name="reason" required rows="2" placeholder="प्राथमिकता बदलने का आधिकारिक कारण (Required)" class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs"></textarea>
+                            <button type="submit" class="w-full py-2 px-4 border border-transparent shadow-sm text-xs font-bold rounded-xl text-white bg-orange-600 hover:bg-orange-700 transition">प्राथमिकता बदलें</button>
+                        </form>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Card 6: SLA -->
+        {% if complaint.sla_record %}
+        <div class="bg-white shadow-sm rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">SLA समय-सीमा स्थिति</h2>
+                {% if complaint.sla_record.is_breached %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">समय-सीमा समाप्त (BREACHED)</span>
+                {% else %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">समय पर (ON TRACK)</span>
+                {% endif %}
+            </div>
+            <div class="p-5 space-y-3 text-xs">
+                <div>
+                    <p class="text-slate-500 font-medium">निस्तारण अंतिम तिथि (Deadline)</p>
+                    <p class="text-sm font-black text-slate-900 font-mono mt-0.5">{{ complaint.sla_record.sla_deadline | default('N/A') }}</p>
+                </div>
+                {% if complaint.sla_record.response_time_minutes %}
+                <div>
+                    <p class="text-slate-500 font-medium">प्रथम प्रतिक्रिया समय</p>
+                    <p class="text-sm font-bold text-slate-900 font-mono mt-0.5">{{ complaint.sla_record.response_time_minutes }} मिनट</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Card 7: History -->
+        <div class="bg-white shadow-sm rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">ऑडिट व कार्यवाही इतिहास (Audit Trail)</h2>
+            </div>
+            <div class="p-6">
+                <div class="flow-root">
+                    <ul role="list" class="-mb-8">
+                        {% for event in complaint.status_history | default([]) %}
+                        <li>
+                            <div class="relative pb-8">
+                                {% if not loop.last %}
+                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-200" aria-hidden="true"></span>
+                                {% endif %}
+                                <div class="relative flex space-x-3">
+                                    <div>
+                                        <span class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center ring-4 ring-white border border-slate-200">
+                                            <svg class="h-4 w-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </span>
+                                    </div>
+                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">स्थिति बदली: <span class="font-bold text-orange-600 uppercase">{{ event.new_status }}</span></p>
+                                            {% if event.notes %}
+                                            <p class="mt-1 text-xs text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-200">{{ event.notes }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="text-right text-[11px] whitespace-nowrap text-slate-400 font-mono">
+                                            <time>{{ event.changed_at }}</time>
+                                            <p class="font-semibold text-slate-600">{{ event.changed_by.username if event.changed_by else 'System' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {% else %}
+                        <p class="text-xs text-slate-400 italic">कोई पूर्व इतिहास उपलब्ध नहीं है।</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

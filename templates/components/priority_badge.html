@@ -1,0 +1,62 @@
+{% macro priority_badge(priority) %}
+{% set p = (priority | default('UNKNOWN')) | upper %}
+{% set color_class = 'bg-gray-400 text-white' %}
+{% if p == 'CRITICAL' %}
+    {% set color_class = 'bg-red-600 text-white font-bold' %}
+{% elif p == 'HIGH' %}
+    {% set color_class = 'bg-orange-500 text-white font-semibold' %}
+{% elif p == 'MEDIUM' %}
+    {% set color_class = 'bg-yellow-500 text-gray-900 font-medium' %}
+{% elif p == 'LOW' %}
+    {% set color_class = 'bg-green-500 text-white font-medium' %}
+{% endif %}
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs {{ color_class }}">
+    {{ p }}
+</span>
+{% endmacro %}
+
+{% macro status_badge(status) %}
+{% set s = (status | default('pending')) | lower %}
+{% set color_class = 'bg-gray-400 text-white' %}
+{% if s == 'pending' %}
+    {% set color_class = 'bg-gray-400 text-white' %}
+{% elif s == 'analyzing' %}
+    {% set color_class = 'bg-blue-400 text-white' %}
+{% elif s == 'open' %}
+    {% set color_class = 'bg-blue-500 text-white' %}
+{% elif s == 'in_progress' %}
+    {% set color_class = 'bg-purple-500 text-white' %}
+{% elif s == 'resolved' %}
+    {% set color_class = 'bg-green-500 text-white' %}
+{% elif s == 'closed' %}
+    {% set color_class = 'bg-gray-600 text-white' %}
+{% elif s == 'rejected' %}
+    {% set color_class = 'bg-red-400 text-white' %}
+{% endif %}
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium {{ color_class }} uppercase tracking-wider">
+    {{ s | replace('_', ' ') }}
+</span>
+{% endmacro %}
+
+{% macro confidence_indicator(confidence) %}
+{% set c = confidence | default(0) | float %}
+{% set color_class = 'text-gray-400' %}
+{% set label = 'Unknown' %}
+{% if c >= 0.80 %}
+    {% set color_class = 'text-green-600' %}
+    {% set label = 'High' %}
+{% elif c >= 0.60 %}
+    {% set color_class = 'text-yellow-600' %}
+    {% set label = 'Medium' %}
+{% elif c >= 0.40 %}
+    {% set color_class = 'text-orange-600' %}
+    {% set label = 'Low' %}
+{% else %}
+    {% set color_class = 'text-red-600 font-semibold' %}
+    {% set label = 'Very Low - Human Review Recommended' %}
+{% endif %}
+<div class="flex items-center space-x-2">
+    <span class="text-sm font-medium {{ color_class }}">{{ (c * 100) | round | int }}%</span>
+    <span class="text-xs text-gray-500">({{ label }})</span>
+</div>
+{% endmacro %}

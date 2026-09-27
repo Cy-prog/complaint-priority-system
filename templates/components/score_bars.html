@@ -1,0 +1,35 @@
+{% macro score_bar(label, score, max_score=100) %}
+{% set s = score | default(0) | float %}
+{% set pct = (s / max_score * 100) | round | int %}
+{% set color_class = 'bg-gray-200' %}
+{% if pct > 80 %}
+    {% set color_class = 'bg-red-500' %}
+{% elif pct > 60 %}
+    {% set color_class = 'bg-orange-400' %}
+{% elif pct > 35 %}
+    {% set color_class = 'bg-yellow-400' %}
+{% else %}
+    {% set color_class = 'bg-green-400' %}
+{% endif %}
+<div class="flex items-center py-2">
+    <div class="w-1/3 text-sm font-medium text-gray-600">{{ label }}</div>
+    <div class="w-2/3 flex items-center space-x-2">
+        <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div class="h-full {{ color_class }} rounded-full" style="width: {{ pct }}%"></div>
+        </div>
+        <div class="w-10 text-right text-xs font-semibold text-gray-700">{{ pct }}</div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro score_bars_panel(analysis) %}
+{% set a = analysis | default({}) %}
+<div class="space-y-1 mt-4">
+    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Dimension Scores</h4>
+    {{ score_bar('Urgency', a.urgency_score) }}
+    {{ score_bar('Severity', a.severity_score) }}
+    {{ score_bar('Impact', a.impact_score) }}
+    {{ score_bar('Safety Risk', a.safety_score) }}
+    {{ score_bar('Duration', a.duration_score) }}
+</div>
+{% endmacro %}

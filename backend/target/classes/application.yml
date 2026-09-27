@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: complaint-priority-system
+
+  # Default profile uses H2 for development
+  datasource:
+    url: jdbc:h2:file:./data/complaints;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    encoding: UTF-8
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Application custom config
+app:
+  ai-service:
+    base-url: http://localhost:5000
+    api-key: complaint-ai-service-key-2024
+    timeout-seconds: 30
+    retry-count: 3
+
+  ticket-prefix: GWA
+
+  sla:
+    critical-hours: 4
+    high-hours: 12
+    medium-hours: 48
+    low-hours: 168
+
+  security:
+    session-timeout-minutes: 480
+
+  admin:
+    default-username: admin
+    default-password: admin123
+    default-email: admin@complaint-system.gov.in
+
+logging:
+  level:
+    com.civic.complaint: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN

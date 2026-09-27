@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>File Complaint</title></head>
+<body>
+<div layout:fragment="content">
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>File a Complaint</h4>
+                    <p class="text-muted mb-0 mt-1">Describe your civic issue in detail. Our AI system will analyze, categorize, and prioritize it.</p>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/citizen/submit}" method="post" th:object="${complaint}">
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Your Name</label>
+                                <input type="text" th:field="*{citizenName}" class="form-control" placeholder="Full name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mobile Number</label>
+                                <input type="tel" th:field="*{mobile}" class="form-control" placeholder="9876543210">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Topic / Subject <span class="text-muted">(optional)</span></label>
+                            <input type="text" th:field="*{topic}" class="form-control" placeholder="e.g., Broken water pipe on Main Road">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                Complaint Description <span class="text-danger">*</span>
+                            </label>
+                            <textarea th:field="*{description}" class="form-control" rows="6"
+                                      placeholder="Describe the issue in detail. Include what happened, when, where, and how it affects you and your community..."
+                                      required minlength="10" maxlength="5000"></textarea>
+                            <div class="form-text">
+                                <i class="bi bi-cpu me-1"></i>
+                                Our AI will automatically detect: Category, Priority, Sentiment, Key Entities, and Risk Level
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Location / Address</label>
+                            <input type="text" th:field="*{address}" class="form-control"
+                                   placeholder="Street, Area, Ward, City">
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Latitude <span class="text-muted">(optional)</span></label>
+                                <input type="number" step="any" th:field="*{latitude}" class="form-control" placeholder="e.g., 23.2599">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Longitude <span class="text-muted">(optional)</span></label>
+                                <input type="number" step="any" th:field="*{longitude}" class="form-control" placeholder="e.g., 77.4126">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-accent btn-lg w-100">
+                            <i class="bi bi-send me-2"></i>Submit Complaint
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

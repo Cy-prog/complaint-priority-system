@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  h2:
+    console:
+      enabled: false
+
+app:
+  ai-service:
+    base-url: http://localhost:5000
+    api-key: test-key
+    timeout-seconds: 2
+  ticket-prefix: GWA
+  sla:
+    critical-hours: 4
+    high-hours: 12
+    medium-hours: 48
+    low-hours: 168

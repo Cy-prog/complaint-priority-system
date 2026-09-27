@@ -1,0 +1,64 @@
+<form id="filter-form" hx-get="/complaints" hx-target="#complaint-list-body" hx-trigger="submit, change" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Search -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-1">
+            <label for="search" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">खोजें (Search)</label>
+            <div class="relative rounded-xl shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+                <input type="text" name="search" id="search" value="{{ filters.search | default('') }}"
+                       class="focus:ring-2 focus:ring-orange-500 focus:border-orange-500 block w-full pl-9 text-xs border-slate-300 rounded-xl py-2.5 border" 
+                       placeholder="टोकन ID, विवरण या वार्ड..."
+                       hx-get="/complaints" hx-target="#complaint-list-body" hx-trigger="keyup changed delay:400ms">
+            </div>
+        </div>
+        
+        <!-- Priority -->
+        <div>
+            <label for="priority" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">प्राथमिकता (Priority)</label>
+            <select id="priority" name="priority" class="block w-full px-3 py-2 text-xs border-slate-300 focus:ring-2 focus:ring-orange-500 rounded-xl border bg-slate-50 text-slate-800 font-semibold">
+                <option value="">सभी प्राथमिकताएं (All)</option>
+                <option value="CRITICAL" {% if filters.priority == 'CRITICAL' %}selected{% endif %}>🔴 आपातकालीन (CRITICAL)</option>
+                <option value="HIGH" {% if filters.priority == 'HIGH' %}selected{% endif %}>🟠 उच्च (HIGH)</option>
+                <option value="MEDIUM" {% if filters.priority == 'MEDIUM' %}selected{% endif %}>🟡 मध्यम (MEDIUM)</option>
+                <option value="LOW" {% if filters.priority == 'LOW' %}selected{% endif %}>🟢 सामान्य (LOW)</option>
+            </select>
+        </div>
+        
+        <!-- Category -->
+        <div>
+            <label for="category_id" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">विभागीय श्रेणी (Category)</label>
+            <select id="category_id" name="category_id" class="block w-full px-3 py-2 text-xs border-slate-300 focus:ring-2 focus:ring-orange-500 rounded-xl border bg-slate-50 text-slate-800">
+                <option value="">सभी विभाग / सेवाएं (All)</option>
+                {% for cat in categories | default([]) %}
+                <option value="{{ cat.id }}" {% if filters.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Status -->
+        <div>
+            <label for="status" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">स्थिति (Status)</label>
+            <select id="status" name="status" class="block w-full px-3 py-2 text-xs border-slate-300 focus:ring-2 focus:ring-orange-500 rounded-xl border bg-slate-50 text-slate-800">
+                <option value="">सभी स्थितियां (All Statuses)</option>
+                <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>लंबित (Pending)</option>
+                <option value="open" {% if filters.status == 'open' %}selected{% endif %}>खुली (Open)</option>
+                <option value="in_progress" {% if filters.status == 'in_progress' %}selected{% endif %}>प्रगति पर (In Progress)</option>
+                <option value="resolved" {% if filters.status == 'resolved' %}selected{% endif %}>निस्तारित (Resolved)</option>
+                <option value="closed" {% if filters.status == 'closed' %}selected{% endif %}>सत्यापित व बंद (Closed)</option>
+            </select>
+        </div>
+    </div>
+    <div class="mt-4 flex justify-end gap-2 pt-3 border-t border-slate-100">
+        <button type="reset" class="px-4 py-2 border border-slate-300 text-xs font-bold rounded-xl text-slate-600 bg-white hover:bg-slate-50 transition" onclick="setTimeout(() => htmx.trigger('#filter-form', 'submit'), 10)">
+            रीसेट (Reset)
+        </button>
+        <button type="submit" class="inline-flex items-center px-5 py-2 text-xs font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition">
+            फिल्टर लागू करें (Apply)
+            <span class="htmx-indicator ml-2">
+                <svg class="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            </span>
+        </button>
+    </div>
+</form>

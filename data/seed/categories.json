@@ -1,0 +1,11 @@
+[
+  {"name": "Water Leakage", "description": "Issues related to water leaks", "risk_level": "Medium", "is_essential_service": true, "department_id": 1, "is_active": true},
+  {"name": "Power Outage", "description": "Electricity power cuts or failures", "risk_level": "High", "is_essential_service": true, "department_id": 2, "is_active": true},
+  {"name": "Potholes", "description": "Road damage and potholes", "risk_level": "Low", "is_essential_service": true, "department_id": 3, "is_active": true},
+  {"name": "Garbage Not Collected", "description": "Sanitation issues", "risk_level": "Medium", "is_essential_service": true, "department_id": 4, "is_active": true},
+  {"name": "Street Light Issue", "description": "Non-functioning street lights", "risk_level": "Low", "is_essential_service": false, "department_id": 2, "is_active": true},
+  {"name": "Sewer Blockage", "description": "Blocked sewers causing overflow", "risk_level": "High", "is_essential_service": true, "department_id": 4, "is_active": true},
+  {"name": "Medical Emergency", "description": "Health related emergency", "risk_level": "Critical", "is_essential_service": true, "department_id": 7, "is_active": true},
+  {"name": "Fire Hazard", "description": "Potential fire risk or active fire", "risk_level": "Critical", "is_essential_service": true, "department_id": 6, "is_active": true},
+  {"name": "Public Nuisance", "description": "Noise or other nuisance", "risk_level": "Low", "is_essential_service": false, "department_id": 6, "is_active": true}
+]

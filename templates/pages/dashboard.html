@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% from 'components/priority_badge.html' import priority_badge, status_badge %}
+
+{% block title %}Dashboard | ComplaintAI{% endblock %}
+{% block page_title %}
+    {% if user and user.role == 'operator' %}
+        वार्ड फील्ड निष्पादन केंद्र (Ward Operations Hub)
+    {% else %}
+        प्रशासनिक निगरानी व नियंत्रण कक्ष (Apex Command Center)
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Role-Aware Welcome & Action Banner -->
+<div class="mb-6 bg-gradient-to-r from-navy-900 to-navy-800 rounded-2xl p-5 text-white shadow-lg border border-navy-700 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="relative z-10">
+        <div class="flex items-center space-x-2 mb-1">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider
+                {{ 'bg-amber-400 text-slate-950' if user and user.role == 'operator' else 'bg-indigo-400 text-slate-950' }}">
+                {{ 'वार्ड फील्ड अधिकारी (Field Mode)' if user and user.role == 'operator' else 'सर्वोच्च प्रशासनिक नियंत्रण (Apex Mode)' }}
+            </span>
+            <span class="text-slate-400 text-xs">&bull; पंचायत व ब्लॉक स्तर</span>
+        </div>
+        <h2 class="text-xl font-black text-white">
+            स्वागत है, {{ user.full_name or user.username }}
+        </h2>
+        <p class="text-xs text-slate-300 mt-1 max-w-2xl">
+            {% if user and user.role == 'operator' %}
+                अपने आवंटित वार्डों में लंबित शिकायतों का स्थलीय निरीक्षण करें, कार्य पूर्ण कर ऑन-साइट फोटो प्रमाण अपलोड करें।
+            {% else %}
+                AI प्राथमिकता वर्गीकरण, समयसीमा (SLA) अनुपालन, सामुदायिक महामारी/आउटब्रेक रडार एवं ग्राम सभा सामाजिक ऑडिट का अवलोकन करें।
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Quick Action Shortcuts -->
+    <div class="relative z-10 flex flex-wrap gap-2 shrink-0">
+        <a href="/map" class="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/20 border border-white/20 transition shadow-sm">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+            <span>GIS नक्शा</span>
+        </a>
+        {% if not user or user.role == 'admin' %}
+        <a href="/reports/gram-sabha" class="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold text-slate-950 bg-saffron-500 hover:bg-saffron-600 transition shadow-md">
+            <svg class="w-3.5 h-3.5 mr-1.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>ग्राम सभा प्रतिवेदन</span>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Active Outbreak / Cluster Risk Alerts -->
+{% if active_clusters and active_clusters|length > 0 %}
+<div class="mb-6 space-y-3">
+    {% for cl in active_clusters %}
+    <div class="p-4 rounded-2xl border-l-4 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3
+        {{ 'bg-red-50 border-red-600 text-red-950' if cl.severity == 'CRITICAL' else 'bg-orange-50 border-orange-500 text-orange-950' }}">
+        <div class="flex items-start space-x-3">
+            <div class="w-10 h-10 rounded-xl {{ 'bg-red-600 text-white badge-glow-red' if cl.severity == 'CRITICAL' else 'bg-orange-500 text-white' }} flex items-center justify-center shrink-0 text-lg">
+                ⚠️
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h4 class="font-extrabold text-sm">{{ cl.title }}</h4>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider
+                        {{ 'bg-red-600 text-white' if cl.severity == 'CRITICAL' else 'bg-orange-500 text-white' }}">
+                        {{ cl.severity }} OUTBREAK ALERT
+                    </span>
+                </div>
+                <p class="text-xs font-semibold mt-1 {{ 'text-red-900' if cl.severity == 'CRITICAL' else 'text-orange-900' }}">
+                    {{ cl.recommended_action }}
+                </p>
+                <div class="flex flex-wrap gap-2 text-[11px] mt-2 font-mono">
+                    <span class="font-bold text-slate-700">स्थान: {{ cl.ward }} &bull; कुल शिकायतें: {{ cl.count }}</span>
+                    <span>&bull; प्रथम रिपोर्ट: {{ cl.first_reported }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+            <a href="/complaints?ward={{ cl.ward }}" class="px-3.5 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-xl shadow-sm whitespace-nowrap">
+                वार्ड शिकायतें देखें &rarr;
+            </a>
+            <a href="/map" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm whitespace-nowrap">
+                नक्शे पर क्लस्टर देखें &rarr;
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- KPI Cards -->
+{% include 'components/kpi_cards.html' %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Priority Distribution Chart -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">प्राथमिकता वितरण (Priority Breakdown)</h3>
+                <p class="text-xs text-slate-500">AI द्वारा निर्धारित गंभीरता व आपातकाल स्तर</p>
+            </div>
+        </div>
+        <div class="h-64 relative">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Complaints Over Time -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">दैनिक शिकायत प्रवाह (Volume Trends)</h3>
+                <p class="text-xs text-slate-500">पिछले 7 दिनों में प्राप्त नई शिकायतें</p>
+            </div>
+        </div>
+        <div class="h-64 relative">
+            <canvas id="timelineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Category Distribution -->
+    <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+        <div class="mb-4">
+            <h3 class="text-base font-bold text-slate-900">प्रमुख विभागीय श्रेणियां</h3>
+            <p class="text-xs text-slate-500">जल, विद्युत, सड़क, स्वच्छता आदि</p>
+        </div>
+        <div class="h-80 relative">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Urgent Complaints Queue -->
+    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+        <div>
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">अति-महत्वपूर्ण शिकायतें (Immediate Attention)</h3>
+                    <p class="text-xs text-slate-500">CRITICAL एवं HIGH प्राथमिकता वाली सक्रिय फाइलें</p>
+                </div>
+                <a href="/complaints?priority=CRITICAL" class="text-xs font-bold text-orange-600 hover:text-orange-800 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition">
+                    सभी देखें &rarr;
+                </a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-3.5 py-3 text-left text-xs font-bold text-slate-600 uppercase">टोकन ID</th>
+                            <th class="px-3.5 py-3 text-left text-xs font-bold text-slate-600 uppercase">शिकायत विवरण</th>
+                            <th class="px-3.5 py-3 text-left text-xs font-bold text-slate-600 uppercase">वार्ड / स्थान</th>
+                            <th class="px-3.5 py-3 text-left text-xs font-bold text-slate-600 uppercase">AI प्राथमिकता</th>
+                            <th class="px-3.5 py-3 text-left text-xs font-bold text-slate-600 uppercase">स्थिति</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-100">
+                        {% for comp in recent_complaints | default([]) %}
+                        <tr class="hover:bg-slate-50 cursor-pointer transition" onclick="window.location.href='/complaints/{{ comp.complaint_id }}'">
+                            <td class="px-3.5 py-3 whitespace-nowrap text-xs font-bold text-slate-900 font-mono">#{{ comp.complaint_id }}</td>
+                            <td class="px-3.5 py-3 text-xs text-slate-700 max-w-xs truncate font-medium">{{ comp.complaint_text | default('') }}</td>
+                            <td class="px-3.5 py-3 whitespace-nowrap text-xs text-slate-600">{{ comp.ward or 'सामान्य' }}</td>
+                            <td class="px-3.5 py-3 whitespace-nowrap">{{ priority_badge(comp.analysis.priority if comp.analysis else 'UNKNOWN') }}</td>
+                            <td class="px-3.5 py-3 whitespace-nowrap">{{ status_badge(comp.status) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="px-4 py-8 text-center text-xs text-slate-500 italic">वर्तमान में कोई आपातकालीन शिकायत लंबित नहीं है।</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/charts.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const priorityData = {{ priority_distribution | default([]) | tojson }};
+    if (priorityData && priorityData.length > 0) {
+        const pLabels = priorityData.map(d => d.priority);
+        const pCounts = priorityData.map(d => d.count);
+        const pColors = pLabels.map(p => getPriorityColor(p));
+        createDoughnutChart('priorityChart', pLabels, pCounts, pColors);
+    }
+    
+    // Mock timeline data if not provided (for display purposes)
+    const tLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const tData = [12, 19, 15, 25, 22, 10, 8];
+    createLineChart('timelineChart', tLabels, tData, 'Complaints');
+    
+    const catData = {{ category_distribution | default([]) | tojson }};
+    if (catData && catData.length > 0) {
+        const cLabels = catData.map(d => d.category);
+        const cCounts = catData.map(d => d.count);
+        createBarChart('categoryChart', cLabels, cCounts, '#6366f1');
+    }
+});
+</script>
+{% endblock %}

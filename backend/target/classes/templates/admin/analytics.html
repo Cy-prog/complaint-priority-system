@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+<head><title>Analytics</title></head>
+<body>
+<div layout:fragment="content">
+<div class="container-fluid py-4 px-4">
+    <h3 class="mb-4"><i class="bi bi-bar-chart-line-fill me-2"></i>Analytics</h3>
+    <div class="row g-3">
+        <div class="col-lg-6"><div class="card glass-card h-100"><div class="card-header"><h6 class="mb-0">Trend (30 Days)</h6></div><div class="card-body"><canvas id="trendChart2" height="300"></canvas></div></div></div>
+        <div class="col-lg-6"><div class="card glass-card h-100"><div class="card-header"><h6 class="mb-0">Status Distribution</h6></div><div class="card-body"><canvas id="statusChart" height="300"></canvas></div></div></div>
+        <div class="col-lg-6"><div class="card glass-card h-100"><div class="card-header"><h6 class="mb-0">Priority Distribution</h6></div><div class="card-body"><canvas id="priorityChart2" height="300"></canvas></div></div></div>
+        <div class="col-lg-6"><div class="card glass-card h-100"><div class="card-header"><h6 class="mb-0">Category Distribution</h6></div><div class="card-body"><canvas id="categoryChart2" height="300"></canvas></div></div></div>
+    </div>
+</div>
+</div>
+<div layout:fragment="scripts">
+<script th:inline="javascript">
+    const trend = /*[[${complaintsTrend}]]*/ [];
+    const priority = /*[[${priorityDistribution}]]*/ [];
+    const category = /*[[${categoryDistribution}]]*/ [];
+    const status = /*[[${statusDistribution}]]*/ [];
+    const pc = { CRITICAL: '#dc2626', HIGH: '#f59e0b', MEDIUM: '#3b82f6', LOW: '#22c55e' };
+
+    new Chart(document.getElementById('trendChart2'), { type:'line', data:{ labels:trend.map(d=>d.date), datasets:[{label:'Complaints',data:trend.map(d=>d.count),borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,0.1)',fill:true,tension:0.4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+    new Chart(document.getElementById('statusChart'), { type:'doughnut', data:{ labels:status.map(d=>d.status), datasets:[{data:status.map(d=>d.count),backgroundColor:['#6366f1','#f59e0b','#3b82f6','#22c55e','#dc2626','#94a3b8','#8b5cf6','#ec4899','#14b8a6','#64748b']}]}, options:{responsive:true,maintainAspectRatio:false}});
+    new Chart(document.getElementById('priorityChart2'), { type:'pie', data:{ labels:priority.map(d=>d.priority), datasets:[{data:priority.map(d=>d.count),backgroundColor:priority.map(d=>pc[d.priority]||'#94a3b8')}]}, options:{responsive:true,maintainAspectRatio:false}});
+    new Chart(document.getElementById('categoryChart2'), { type:'bar', data:{ labels:category.map(d=>d.category), datasets:[{label:'Count',data:category.map(d=>d.count),backgroundColor:'#8b5cf6',borderRadius:6}]}, options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}}}});
+</script>
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+﻿<!-- PWA Install Prompt Banner & Service Worker Registrant -->
+<div id="pwa-install-container" 
+     x-data="pwaInstaller()" 
+     x-init="initPWA()" 
+     x-show="showBanner" 
+     x-cloak 
+     class="fixed bottom-16 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 bg-slate-900/95 text-white border border-saffron-500/40 rounded-2xl shadow-2xl p-4 backdrop-blur-xl transition-all duration-300 transform translate-y-0">
+    <div class="flex items-start space-x-3">
+        <div class="w-11 h-11 rounded-xl gradient-saffron flex items-center justify-center text-xl shrink-0 shadow-md">
+            🏛️
+        </div>
+        <div class="flex-1">
+            <div class="flex items-center justify-between">
+                <h4 class="text-xs font-black uppercase tracking-wider text-saffron-400">ग्वालियर जन समाधान ऐप</h4>
+                <button @click="dismissBanner()" class="text-slate-400 hover:text-white p-0.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <p class="text-xs text-slate-200 mt-1 leading-snug">
+                होम स्क्रीन पर जोड़ें — तेज गति, ऑफलाइन पहुंच व तत्काल शिकायत रसीद।
+            </p>
+            <div class="mt-3 flex items-center space-x-2">
+                <button @click="installApp()" class="px-3.5 py-1.5 gradient-saffron text-white text-xs font-bold rounded-lg shadow hover:opacity-95 transition flex items-center">
+                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>ऐप इंस्टॉल करें (Install)</span>
+                </button>
+                <button @click="dismissBanner()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-slate-300 text-xs font-medium rounded-lg transition">
+                    बाद में (Later)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function pwaInstaller() {
+        return {
+            showBanner: false,
+            deferredPrompt: null,
+
+            initPWA() {
+                // 1. Register Service Worker
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                            .then((reg) => {
+                                console.log('[PWA] Service Worker registered with scope:', reg.scope);
+                            })
+                            .catch((err) => {
+                                console.warn('[PWA] Service Worker registration failed:', err);
+                            });
+                    });
+                }
+
+                // 2. Intercept install prompt
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.deferredPrompt = e;
+                    
+                    // Show banner if not dismissed in last 24 hours
+                    const dismissedAt = localStorage.getItem('gwalior_pwa_dismissed');
+                    const now = Date.now();
+                    if (!dismissedAt || (now - parseInt(dismissedAt)) > 86400000) {
+                        this.showBanner = true;
+                    }
+                });
+
+                // 3. Track installed
+                window.addEventListener('appinstalled', () => {
+                    console.log('[PWA] Gwalior JanSamadhan App was successfully installed');
+                    this.showBanner = false;
+                    this.deferredPrompt = null;
+                });
+            },
+
+            async installApp() {
+                if (this.deferredPrompt) {
+                    this.deferredPrompt.prompt();
+                    const { outcome } = await this.deferredPrompt.userChoice;
+                    console.log('[PWA] User choice:', outcome);
+                    this.deferredPrompt = null;
+                    this.showBanner = false;
+                }
+            },
+
+            dismissBanner() {
+                this.showBanner = false;
+                localStorage.setItem('gwalior_pwa_dismissed', Date.now().toString());
+            }
+        };
+    }
+</script>

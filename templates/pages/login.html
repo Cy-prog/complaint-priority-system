@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ग्वालियर जन समाधान | नगर पालिक निगम व जिला प्रशासन लॉगिन</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0b192c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ग्वालियर समाधान">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+    <!-- Tailwind CSS with custom theme -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f9',
+                            800: '#102a43',
+                            900: '#0b192c',
+                            950: '#060e18',
+                        },
+                        saffron: {
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        },
+                        emerald: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body class="bg-slate-900 min-h-screen flex flex-col justify-between text-slate-100 font-sans antialiased relative selection:bg-orange-500 selection:text-white">
+
+    <!-- Top Tiranga Header Stripe -->
+    <div class="tiranga-stripe w-full shrink-0"></div>
+
+    <!-- Background Subtle Glows -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-orange-600/15 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-10 w-[500px] h-[300px] bg-emerald-600/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="w-full max-w-5xl">
+            
+            <!-- Top Branding & Emblem -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center space-x-3 mb-3 bg-white/10 px-4 py-1.5 rounded-full border border-white/15 backdrop-blur-md">
+                    <!-- Ashoka Chakra SVG -->
+                    <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14M8.46 3.54l7.08 16.92M3.54 8.46l16.92 7.08M15.54 3.54L8.46 20.46M3.54 15.54l16.92-7.08"></path>
+                    </svg>
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-200">डिजिटल भारत • नगर पालिक निगम ग्वालियर व जिला प्रशासन</span>
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight flex items-center justify-center flex-wrap gap-2">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-white to-emerald-400">ग्वालियर जन समाधान</span>
+                    <span class="text-slate-400 font-medium text-2xl sm:text-3xl lg:text-4xl">| JanSamadhan AI</span>
+                </h1>
+                <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mt-2 leading-relaxed">
+                    ग्वालियर नगर निगम (GMC) व जिला प्रशासन के लिए त्रि-स्तरीय त्वरित जन-शिकायत निवारण व AI प्राथमिकता निगरानी तंत्र
+                </p>
+            </div>
+
+            <!-- 3-TIER GATEWAY SELECTION GRID -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                
+                <!-- TIER 1: CITIZEN PORTAL (No Login) -->
+                <div class="bg-gradient-to-b from-white/10 to-white/5 border border-emerald-500/40 rounded-2xl p-5 backdrop-blur-xl relative overflow-hidden group hover:border-emerald-400 transition-all hover:shadow-xl hover:shadow-emerald-900/30 flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 bg-emerald-500 text-slate-950 font-black text-[10px] uppercase px-3 py-1 rounded-bl-xl tracking-wider">
+                        खुला जन-पोर्टल
+                    </div>
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl mb-4 border border-emerald-500/30">
+                            👨‍👩‍👧
+                        </div>
+                        <h2 class="text-lg font-bold text-white mb-1">1. नागरिक सेवा पोर्टल</h2>
+                        <p class="text-xs text-emerald-400 font-semibold mb-2">Citizen Public Access (No Login)</p>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            ग्वालियर नागरिक बोलकर (आवाज द्वारा) या फोटो खींचकर शिकायत दर्ज करें, त्वरित रसीद पाएं एवं समाधान ट्रैक करें।
+                        </p>
+                    </div>
+                    <a href="/portal" class="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-md">
+                        <span>नागरिक पोर्टल खोलें</span>
+                        <svg class="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
+                </div>
+
+                <!-- TIER 2: FIELD OFFICER / OPERATOR -->
+                <div class="bg-gradient-to-b from-white/10 to-white/5 border border-amber-500/40 rounded-2xl p-5 backdrop-blur-xl relative overflow-hidden group hover:border-amber-400 transition-all hover:shadow-xl hover:shadow-amber-900/30 flex flex-col justify-between"
+                     id="card-operator">
+                    <div class="absolute top-0 right-0 bg-amber-500 text-slate-950 font-black text-[10px] uppercase px-3 py-1 rounded-bl-xl tracking-wider">
+                        फील्ड निवारण
+                    </div>
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mb-4 border border-amber-500/30">
+                            👷‍♂️
+                        </div>
+                        <h2 class="text-lg font-bold text-white mb-1">2. वार्ड जोनल अधिकारी</h2>
+                        <p class="text-xs text-amber-400 font-semibold mb-2">GMC Ward Officer / Junior Engineer</p>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            वार्ड 1-66 स्तर पर स्थलीय निरीक्षण, समयसीमा (SLA) अनुसार कार्य एवं निवारण का <strong>फोटो प्रमाण अपलोड</strong>।
+                        </p>
+                    </div>
+                    <button type="button" onclick="fillCredentials('operator', 'operator123', 'इंजीनियर (GMC Ward Officer)')" class="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 transition-all shadow-md">
+                        <span>1-क्लिक फील्ड लॉगिन चुनें</span>
+                        <svg class="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    </button>
+                </div>
+
+                <!-- TIER 3: APEX EXECUTIVE / BDO / SARPANCH -->
+                <div class="bg-gradient-to-b from-white/10 to-white/5 border border-indigo-500/40 rounded-2xl p-5 backdrop-blur-xl relative overflow-hidden group hover:border-indigo-400 transition-all hover:shadow-xl hover:shadow-indigo-900/30 flex flex-col justify-between"
+                     id="card-admin">
+                    <div class="absolute top-0 right-0 bg-indigo-500 text-white font-black text-[10px] uppercase px-3 py-1 rounded-bl-xl tracking-wider">
+                        उच्च प्रशासनिक नियंत्रण
+                    </div>
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl mb-4 border border-indigo-500/30">
+                            🏛️
+                        </div>
+                        <h2 class="text-lg font-bold text-white mb-1">3. नगर निगम व कलेक्ट्रेट</h2>
+                        <p class="text-xs text-indigo-400 font-semibold mb-2">Municipal Commissioner / Collectorate, Gwalior</p>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            ग्वालियर आउटब्रेक चेतावनी रडार, स्थानिक हॉटस्पॉट मैप एवं <strong>समीक्षा व जनसुनवाई प्रतिवेदन</strong>।
+                        </p>
+                    </div>
+                    <button type="button" onclick="fillCredentials('admin', 'admin123', 'मुख्यालय / कलेक्ट्रेट (Apex Authority)')" class="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition-all shadow-md">
+                        <span>1-क्लिक मुख्यालय लॉगिन</span>
+                        <svg class="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- LOGIN CARD FORM -->
+            <div class="max-w-xl mx-auto bg-slate-800/90 border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8 backdrop-blur-2xl">
+                
+                <div class="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">विभागीय व अधिकारी लॉगिन</h3>
+                        <p class="text-xs text-slate-400">Departmental & Official Sign-in</p>
+                    </div>
+                    <div id="role-pill" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        Apex Admin (BDO)
+                    </div>
+                </div>
+
+                {% if error %}
+                <div class="bg-red-500/20 border border-red-500/40 text-red-200 text-xs p-3.5 rounded-xl mb-6 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                    <span>{{ error }}</span>
+                </div>
+                {% endif %}
+
+                <form action="/login" method="POST" class="space-y-4">
+                    <div>
+                        <label for="username" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">उपयोगकर्ता नाम (Username):</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            </span>
+                            <input id="username" name="username" type="text" value="admin" required class="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-600 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">पासवर्ड (Password):</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </span>
+                            <input id="password" name="password" type="password" value="admin123" required class="w-full pl-10 pr-10 py-2.5 bg-slate-900/90 border border-slate-600 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition">
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white">
+                                <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 px-4 rounded-xl text-sm font-bold text-white gradient-saffron hover:opacity-95 shadow-lg transition-all flex items-center justify-center space-x-2">
+                        <span>सुरक्षित प्रवेश करें (Sign in to Dashboard)</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                </form>
+
+                <!-- Micro Security Footnote -->
+                <div class="mt-5 pt-4 border-t border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400">
+                    <span class="flex items-center">
+                        <svg class="w-3.5 h-3.5 mr-1 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                        256-Bit SSL एन्क्रिप्टेड
+                    </span>
+                    <span>NIC व MeitY मानक संगत</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 py-4 text-center text-xs text-slate-500 border-t border-slate-800 pb-16 md:pb-4">
+        <p>ग्वालियर जन समाधान (Gwalior JanSamadhan AI) — नगर पालिक निगम ग्वालियर व जिला प्रशासन सुशासन के लिए संकल्पित</p>
+    </footer>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    {% include 'components/mobile_app_bar.html' %}
+
+    <!-- PWA Install Prompt Banner -->
+    {% include 'components/pwa_install_banner.html' %}
+
+    <!-- Interactive Script -->
+    <script>
+        function fillCredentials(user, pass, title) {
+            const userInput = document.getElementById('username');
+            const passInput = document.getElementById('password');
+            const rolePill = document.getElementById('role-pill');
+            
+            userInput.value = user;
+            passInput.value = pass;
+            
+            rolePill.textContent = title;
+            if (user === 'operator') {
+                rolePill.className = "text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30";
+            } else {
+                rolePill.className = "text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+            }
+            
+            // Subtle flash effect on form
+            userInput.focus();
+        }
+
+        function togglePassword() {
+            const passInput = document.getElementById('password');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+            } else {
+                passInput.type = 'password';
+            }
+        }
+    </script>
+</body>
+</html>

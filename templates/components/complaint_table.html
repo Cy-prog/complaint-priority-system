@@ -1,0 +1,25 @@
+{% from 'components/priority_badge.html' import priority_badge, status_badge, confidence_indicator %}
+
+<div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200">
+    <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+            <tr>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">टोकन ID</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">शिकायत विवरण (Complaint)</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">श्रेणी (Category)</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">प्राथमिकता (Priority)</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider hidden md:table-cell">स्थिति (Status)</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider hidden lg:table-cell">दिनांक (Date)</th>
+                <th scope="col" class="px-6 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider hidden xl:table-cell">AI विश्वसनीयता</th>
+            </tr>
+        </thead>
+        <tbody id="complaint-list-body" class="bg-white divide-y divide-slate-200 htmx-indicator-container">
+            {% include 'partials/complaint_rows.html' %}
+        </tbody>
+    </table>
+    {% if not complaints or not complaints.items %}
+    <div class="p-8 text-center text-slate-400 text-sm">
+        कोई शिकायत नहीं मिली (No complaints found matching criteria).
+    </div>
+    {% endif %}
+</div>

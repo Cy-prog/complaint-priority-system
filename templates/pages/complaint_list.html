@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'components/pagination.html' import paginate %}
+
+{% block title %}शिकायत पंजिका | Complaints Registry - JanSamadhan AI{% endblock %}
+{% block page_title %}शिकायत पंजिका व वर्गीकरण (Grievance Registry){% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+    <div>
+        <p class="text-xs text-slate-500 font-medium">समस्त नागरिक शिकायतों की वास्तविक समय स्थिति, AI प्राथमिकता एवं फील्ड निस्तारण ट्रैकिंग</p>
+    </div>
+    <div class="flex items-center space-x-3">
+        <a href="/map" class="inline-flex items-center px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 shadow-sm transition">
+            <svg class="mr-1.5 h-4 w-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+            GIS मानचित्र दृश्य (GIS Map)
+        </a>
+        <a href="/complaints/new" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold rounded-xl shadow-md transition">
+            <svg class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            नई शिकायत दर्ज करें (New)
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+{% include 'components/filters.html' %}
+
+<!-- Complaint List -->
+<div id="complaint-list" class="relative">
+    {% include 'components/complaint_table.html' %}
+</div>
+
+{% endblock %}

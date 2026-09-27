@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics | ComplaintAI{% endblock %}
+{% block page_title %}Analytics & Reports{% endblock %}
+
+{% block content %}
+<!-- Top KPI Summary -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 flex items-center">
+        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <div>
+            <p class="text-sm font-medium text-gray-500">AI vs Human Agreement Rate</p>
+            <p class="text-2xl font-bold text-gray-900">{{ ((1 - (analytics.override_rate | default(0))) * 100) | round(1) }}%</p>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 flex items-center">
+        <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <div>
+            <p class="text-sm font-medium text-gray-500">Avg AI Confidence</p>
+            <p class="text-2xl font-bold text-gray-900">{{ ((analytics.avg_confidence | default(0)) * 100) | round(1) }}%</p>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 flex items-center">
+        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+        </div>
+        <div>
+            <p class="text-sm font-medium text-gray-500">SLA Compliance Rate</p>
+            <p class="text-2xl font-bold text-gray-900">{{ ((analytics.sla_compliance_rate | default(0)) * 100) | round(1) }}%</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Volume over time -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 lg:col-span-2">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Complaint Volume (Last 30 Days)</h3>
+        <div class="h-80 relative">
+            <canvas id="volumeChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Priority Distribution -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Priority Distribution</h3>
+        <div class="h-72 relative">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Category Distribution -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Complaints by Category</h3>
+        <div class="h-72 relative">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/charts.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Volume Chart
+    const volData = {{ analytics.complaints_over_time | default([]) | tojson }};
+    if (volData && volData.length > 0) {
+        const vLabels = volData.map(d => d.date);
+        const vCounts = volData.map(d => d.count);
+        createLineChart('volumeChart', vLabels, vCounts, 'Complaints');
+    } else {
+        // Fallback for display
+        createLineChart('volumeChart', ['Week 1', 'Week 2', 'Week 3', 'Week 4'], [120, 150, 180, 130], 'Complaints');
+    }
+    
+    // Priority Chart
+    const priorityData = {{ analytics.priority_distribution | default([]) | tojson }};
+    if (priorityData && priorityData.length > 0) {
+        const pLabels = priorityData.map(d => d.priority);
+        const pCounts = priorityData.map(d => d.count);
+        const pColors = pLabels.map(p => getPriorityColor(p));
+        createDoughnutChart('priorityChart', pLabels, pCounts, pColors);
+    }
+    
+    // Category Chart
+    const catData = {{ analytics.category_distribution | default([]) | tojson }};
+    if (catData && catData.length > 0) {
+        const cLabels = catData.map(d => d.category);
+        const cCounts = catData.map(d => d.count);
+        createBarChart('categoryChart', cLabels, cCounts, '#3b82f6');
+    }
+});
+</script>
+{% endblock %}

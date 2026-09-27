@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    container_name: complaint_priority_system
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=Complaint Priority System
+      - APP_ENV=production
+      - DEBUG=false
+      - SECRET_KEY=prod-secret-key-change-in-production-12345
+      - ALLOWED_HOSTS=*
+      - DATABASE_URL=sqlite:///./data/complaints.db
+      - CHROMA_PERSIST_DIR=./data/chroma
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=admin123
+      - SESSION_EXPIRY_HOURS=24
+      - RATE_LIMIT_PER_MINUTE=120
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped

@@ -1,0 +1,400 @@
+/* CivicPulse AI Complaint System - Modern Civic Command Center CSS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --navy-900: #0b192c;
+    --navy-800: #1e3e62;
+    --navy-700: #2c5282;
+    --navy-600: #3b6998;
+    
+    --critical-red: #ef4444;
+    --critical-bg: #fef2f2;
+    --critical-border: #fecaca;
+    
+    --high-orange: #f97316;
+    --high-bg: #fff7ed;
+    --high-border: #ffedd5;
+    
+    --medium-yellow: #eab308;
+    --medium-bg: #fefce8;
+    --medium-border: #fef08a;
+    
+    --low-green: #10b981;
+    --low-bg: #ecfdf5;
+    --low-border: #a7f3d0;
+    
+    --civic-blue: #2563eb;
+    --civic-purple: #8b5cf6;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+/* Navbar */
+.top-nav {
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 0.75rem 1.5rem;
+}
+
+.brand-text {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: 1.35rem;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.top-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    padding: 0.5rem 0.85rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.top-nav .nav-link:hover, .top-nav .nav-link.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Glass & Clean Cards */
+.glass-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+}
+
+/* KPI Cards */
+.kpi-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.kpi-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-right: 1.25rem;
+    flex-shrink: 0;
+}
+
+.kpi-total .kpi-icon { background: #eff6ff; color: #2563eb; }
+.kpi-critical .kpi-icon { background: var(--critical-bg); color: var(--critical-red); }
+.kpi-open .kpi-icon { background: var(--high-bg); color: var(--high-orange); }
+.kpi-resolved .kpi-icon { background: var(--low-bg); color: var(--low-green); }
+
+.kpi-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text-main);
+}
+
+.kpi-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Mini KPI Pill Cards */
+.mini-kpi {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.mini-kpi-val {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.mini-kpi-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.mini-kpi.warning {
+    border-color: var(--critical-border);
+    background: var(--critical-bg);
+}
+.mini-kpi.warning .mini-kpi-val {
+    color: var(--critical-red);
+}
+
+/* Priority Badges */
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.priority-critical { background: var(--critical-bg); color: var(--critical-red); border: 1px solid var(--critical-border); }
+.priority-high { background: var(--high-bg); color: var(--high-orange); border: 1px solid var(--high-border); }
+.priority-medium { background: var(--medium-bg); color: #854d0e; border: 1px solid var(--medium-border); }
+.priority-low { background: var(--low-bg); color: #065f46; border: 1px solid var(--low-border); }
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-submitted { background: #f1f5f9; color: #475569; }
+.status-ai_analysis { background: #e0e7ff; color: #3730a3; }
+.status-classified { background: #dbeafe; color: #1e40af; }
+.status-assigned { background: #fef3c7; color: #92400e; }
+.status-in_progress { background: #ffedd5; color: #9a3412; }
+.status-escalated { background: #fee2e2; color: #991b1b; }
+.status-resolved { background: #d1fae5; color: #065f46; }
+.status-citizen_feedback { background: #ede9fe; color: #5b21b6; }
+.status-closed { background: #e2e8f0; color: #334155; }
+
+/* Timeline UI */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 2px solid var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-point {
+    position: absolute;
+    left: -2.45rem;
+    top: 0.25rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 2px #2563eb;
+}
+
+.timeline-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* Score Metrics */
+.score-progress {
+    height: 8px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    overflow: hidden;
+}
+
+.score-progress .progress-bar {
+    border-radius: 4px;
+}
+
+/* User avatar */
+.user-avatar {
+    font-size: 1.25rem;
+    color: #cbd5e1;
+}
+
+/* Accent Buttons */
+.btn-accent {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1.5rem;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-accent:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+}
+
+.btn-accent:active {
+    transform: translateY(0);
+}
+
+/* Priority Score Circles */
+.score-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin: 0 auto 0.35rem;
+    border: 3px solid;
+    transition: transform 0.2s;
+}
+
+.score-circle:hover {
+    transform: scale(1.05);
+}
+
+.score-circle.critical {
+    background: #fef2f2;
+    color: var(--critical-red);
+    border-color: var(--critical-red);
+}
+
+.score-circle.high {
+    background: #fff7ed;
+    color: var(--high-orange);
+    border-color: var(--high-orange);
+}
+
+.score-circle.medium {
+    background: #fefce8;
+    color: #ca8a04;
+    border-color: #ca8a04;
+}
+
+.score-circle.low {
+    background: #ecfdf5;
+    color: var(--low-green);
+    border-color: var(--low-green);
+}
+
+/* Mini Score Bars in AI Analysis */
+.mini-score-bar {
+    position: relative;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    overflow: hidden;
+    font-size: 0.78rem;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.mini-score-bar .bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    opacity: 0.18;
+    z-index: -1;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mini-score-bar .bar.urgency { background: #ef4444; }
+.mini-score-bar .bar.severity { background: #f97316; }
+.mini-score-bar .bar.impact { background: #3b82f6; }
+.mini-score-bar .bar.safety { background: #10b981; }
+
+.mini-score-bar span {
+    position: relative;
+    z-index: 2;
+    color: var(--text-main);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* AI Chips and Badges */
+.ai-badge {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

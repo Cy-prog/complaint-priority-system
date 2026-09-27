@@ -1,0 +1,223 @@
+critical_safety_keywords:
+  - fire
+  - collapse
+  - electrocution
+  - electrocute
+  - electric shock
+  - flood
+  - explosion
+  - explode
+  - blast
+  - gas leak
+  - building collapse
+  - live wire
+  - exposed wire
+  - live electrical wire
+  - open wire
+  - hanging wire
+  - loose wire
+  - drowning
+  - toxic
+  - poisoning
+  - epidemic
+  - outbreak
+  - hit and run
+  - hit-and-run
+  - hit a pedestrian
+  - hit person
+  - ran over
+  - violent incident
+  - active violence
+  - assault
+  - stabbing
+  - knife attack
+  - gunshot
+  - major contamination
+  # Hindi & Hinglish Critical Safety
+  - आग
+  - विस्फोट
+  - करंट
+  - करंट लगना
+  - बिजली का झटका
+  - लाइव तार
+  - नंगा तार
+  - खुला तार
+  - लटकता तार
+  - तार लटक
+  - आगजनी
+  - गैस रिसाव
+  - इमारत गिर
+  - मकान ढह
+  - डूबना
+  - जहरीला
+  - महामारी
+  - आउटब्रेक
+  - करंट का खतरा
+  - टक्कर मारकर फरार
+  - हिट एंड रन
+  - पैदल यात्री को टक्कर
+  - जानलेवा हमला
+  - खून बह रहा है
+
+high_safety_keywords:
+  - accident
+  - injury
+  - injured
+  - danger
+  - dangerous
+  - hazard
+  - hazardous
+  - unsafe
+  - life threatening
+  - broken bridge
+  - open manhole
+  - sinkhole
+  - falling
+  - crack in wall
+  - crack in building
+  - unstable structure
+  - contaminated water
+  - electrical fault
+  - short circuit
+  - transformer burst
+  - spark
+  - sparking
+  # Hindi & Hinglish High Safety
+  - हादसा
+  - दुर्घटना
+  - घायल
+  - खतरा
+  - खतरनाक
+  - असुरक्षित
+  - जानलेवा
+  - खुला मैनहोल
+  - खुला चेंबर
+  - चेंबर खुला
+  - दीवार में दरार
+  - गहरा गड्ढा
+  - गड्ढे
+  - स्पार्किंग
+  - शॉर्ट सर्किट
+  - ट्रांसफार्मर
+  - दूषित पानी
+  - गंदा पानी
+  - बदबूदार पानी
+  - नाला उफन
+  - जलभराव
+
+vulnerable_population_keywords:
+  - children
+  - child
+  - kids
+  - elderly
+  - old age
+  - senior citizen
+  - seniors
+  - disabled
+  - handicapped
+  - pregnant
+  - infant
+  - infants
+  - baby
+  - babies
+  - toddler
+  - toddlers
+  - school
+  - hospital
+  - clinic
+  - orphanage
+  - old age home
+  # Hindi & Hinglish Vulnerable Population
+  - बच्चे
+  - बच्चा
+  - बच्चों
+  - बुजुर्ग
+  - वृद्ध
+  - वरिष्ठ नागरिक
+  - बीमार
+  - मरीज
+  - दिव्यांग
+  - विकलांग
+  - गर्भवती
+  - शिशु
+  - स्कूल
+  - विद्यालय
+  - शाला
+  - अस्पताल
+  - चिकित्सालय
+  - डिस्पेंसरी
+  - अनाथालय
+  - वृद्धाश्रम
+
+escalation_signal_keywords:
+  - again
+  - repeated
+  - repeatedly
+  - already reported
+  - still not fixed
+  - no action taken
+  - multiple times
+  - previous complaint
+  - ignoring
+  - no response
+  - months
+  - weeks
+  - long time
+  - unaddressed
+  - reminder
+  # Hindi & Hinglish Escalation
+  - बार-बार
+  - दोबारा
+  - पहले भी शिकायत
+  - कोई कार्रवाई नहीं
+  - कोई सुनवाई नहीं
+  - कई बार
+  - अभी तक ठीक नहीं
+  - ध्यान नहीं दिया
+  - हफ्तों से
+  - महीनों से
+  - अतिशीघ्र
+  - तुरंत
+
+essential_service_disruption_keywords:
+  - no water
+  - no electricity
+  - no power
+  - water stopped
+  - power cut
+  - blackout
+  - complete shutdown
+  - total failure
+  - disrupted
+  - disruption
+  - interrupted
+  - interruption
+  - halted
+  - unavailable
+  - dry tap
+  - cut off
+  - cutoff
+  - shut off
+  # Hindi & Hinglish Essential Service
+  - पानी बंद
+  - पानी नहीं
+  - बिजली गुल
+  - बिजली नहीं
+  - बत्ती गुल
+  - बिजली बंद
+  - आपूर्ति ठप
+  - नल सूखे
+  - पूर्ण बंद
+  - आपूर्ति बाधित
+  - पानी की समस्या
+  - बिजली कटौती
+
+duration_keywords:
+  hours: [hours, hour, hrs, घंटे, घंटा]
+  days: [days, day, दिन]
+  weeks: [weeks, week, सप्ताह, हफ्ते, हफ्ता]
+  months: [months, month, महीने, महीना]
+  years: [years, year, साल, वर्ष]
+  since_yesterday: [since yesterday, from yesterday, कल से]
+  since_morning: [since morning, from morning, आज सुबह से, सुबह से]
+  since_last_week: [since last week, from last week, पिछले हफ्ते से]

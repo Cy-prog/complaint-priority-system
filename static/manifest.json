@@ -1,0 +1,27 @@
+{
+  "name": "ग्वालियर जन समाधान - Gwalior JanSamadhan",
+  "short_name": "ग्वालियर समाधान",
+  "description": "नगर पालिक निगम व जिला प्रशासन ग्वालियर - एआई आधारित जन-शिकायत निवारण प्रणाली",
+  "start_url": "/portal",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b192c",
+  "theme_color": "#0b192c",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["government", "productivity", "utilities"],
+  "lang": "hi"
+}

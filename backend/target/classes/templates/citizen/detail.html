@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Complaint Detail</title></head>
+<body>
+<div layout:fragment="content">
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- Main Info -->
+        <div class="col-lg-8">
+            <div class="card glass-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <span class="ticket-link" th:text="${complaint.ticketId}">GWA-1234</span>
+                    </h4>
+                    <span class="status-badge" th:classappend="'status-' + ${complaint.status.name().toLowerCase()}" th:text="${complaint.status}">Status</span>
+                </div>
+                <div class="card-body">
+                    <h6 th:if="${complaint.topic}" th:text="${complaint.topic}" class="fw-bold mb-2">Topic</h6>
+                    <p th:text="${complaint.description}" class="complaint-text">Description</p>
+
+                    <div class="row mt-3 g-2">
+                        <div class="col-md-6" th:if="${complaint.address}">
+                            <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>Location</small>
+                            <p class="mb-0" th:text="${complaint.address}">Address</p>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted"><i class="bi bi-calendar me-1"></i>Filed</small>
+                            <p class="mb-0" th:text="${#temporals.format(complaint.createdAt, 'dd MMM yyyy HH:mm')}">Date</p>
+                        </div>
+                        <div class="col-md-3" th:if="${complaint.resolvedAt}">
+                            <small class="text-muted"><i class="bi bi-check-circle me-1"></i>Resolved</small>
+                            <p class="mb-0" th:text="${#temporals.format(complaint.resolvedAt, 'dd MMM yyyy HH:mm')}">Date</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analysis -->
+            <div th:if="${complaint.analysis}" class="card glass-card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-cpu me-2"></i>AI Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 text-center">
+                            <div class="score-circle" th:classappend="${complaint.priority?.name()?.toLowerCase()}">
+                                <span th:text="${complaint.analysis.priorityScore}">75</span>
+                            </div>
+                            <small class="text-muted">Priority Score</small>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row g-2">
+                                <div class="col-4"><small class="text-muted">Category</small><p class="fw-bold mb-1" th:text="${complaint.category ?: 'N/A'}">Cat</p></div>
+                                <div class="col-4"><small class="text-muted">Sentiment</small><p class="fw-bold mb-1" th:text="${complaint.sentiment ?: 'N/A'}">Sent</p></div>
+                                <div class="col-4"><small class="text-muted">Confidence</small><p class="fw-bold mb-1" th:text="${complaint.analysis.confidence != null ? (complaint.analysis.confidence > 1.0 ? #numbers.formatDecimal(complaint.analysis.confidence, 1, 0) + '%' : #numbers.formatDecimal(complaint.analysis.confidence * 100, 1, 0) + '%') : 'N/A'}">80%</p></div>
+                            </div>
+                            <div class="mt-2" th:if="${complaint.analysis.reasoningSummary}">
+                                <small class="text-muted">AI Reasoning</small>
+                                <p class="mb-0" th:text="${complaint.analysis.reasoningSummary}">Reasoning</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Score Breakdown -->
+                    <div class="mt-3">
+                        <small class="text-muted fw-bold">Score Breakdown</small>
+                        <div class="row g-2 mt-1">
+                            <div class="col"><div class="mini-score-bar"><div class="bar" th:style="'width:'+${complaint.analysis.urgencyScore}+'%'"></div><span>Urgency <b th:text="${complaint.analysis.urgencyScore}">0</b></span></div></div>
+                            <div class="col"><div class="mini-score-bar"><div class="bar" th:style="'width:'+${complaint.analysis.severityScore}+'%'"></div><span>Severity <b th:text="${complaint.analysis.severityScore}">0</b></span></div></div>
+                            <div class="col"><div class="mini-score-bar"><div class="bar" th:style="'width:'+${complaint.analysis.impactScore}+'%'"></div><span>Impact <b th:text="${complaint.analysis.impactScore}">0</b></span></div></div>
+                            <div class="col"><div class="mini-score-bar"><div class="bar" th:style="'width:'+${complaint.analysis.safetyScore}+'%'"></div><span>Safety <b th:text="${complaint.analysis.safetyScore}">0</b></span></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citizen Feedback -->
+            <div th:if="${complaint.status.name() == 'RESOLVED'}" class="card glass-card mt-3">
+                <div class="card-header"><h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Submit Feedback</h5></div>
+                <div class="card-body">
+                    <form th:action="@{/citizen/complaint/{id}/feedback(id=${complaint.ticketId})}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <select name="rating" class="form-select" required>
+                                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                                <option value="4">⭐⭐⭐⭐ Good</option>
+                                <option value="3">⭐⭐⭐ Average</option>
+                                <option value="2">⭐⭐ Poor</option>
+                                <option value="1">⭐ Very Poor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Feedback</label>
+                            <textarea name="feedback" class="form-control" rows="3" placeholder="How was the resolution?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-accent">Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Priority Badge -->
+            <div class="card glass-card mb-3">
+                <div class="card-body text-center">
+                    <span th:if="${complaint.priority}" class="priority-badge-lg"
+                          th:classappend="'priority-' + ${complaint.priority.name().toLowerCase()}"
+                          th:text="${complaint.priority}">CRITICAL</span>
+                    <span th:unless="${complaint.priority}" class="badge bg-secondary fs-6">Pending Analysis</span>
+                    <div th:if="${complaint.slaDeadline}" class="mt-2">
+                        <small class="text-muted">SLA Deadline</small>
+                        <p class="mb-0 fw-bold" th:text="${#temporals.format(complaint.slaDeadline, 'dd MMM yyyy HH:mm')}">Deadline</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card glass-card">
+                <div class="card-header"><h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Timeline</h6></div>
+                <div class="card-body p-0">
+                    <div class="timeline">
+                        <div class="timeline-item" th:each="h : ${statusHistory}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <p class="fw-bold mb-0" th:text="${h.newStatus}">Status</p>
+                                <small class="text-muted" th:text="${h.note}">Note</small><br>
+                                <small class="text-muted" th:text="${#temporals.format(h.changedAt, 'dd MMM HH:mm')}">Date</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

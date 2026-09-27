@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+<head><title>AI Intelligence</title></head>
+<body>
+<div layout:fragment="content">
+<div class="container-fluid py-4 px-4">
+    <h3 class="mb-4"><i class="bi bi-cpu-fill me-2"></i>AI Intelligence Center</h3>
+
+    <!-- AI Health -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-4">
+            <div class="card glass-card text-center">
+                <div class="card-body">
+                    <i class="bi display-4" th:classappend="${aiHealthy ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'}"></i>
+                    <h5 class="mt-2" th:text="${aiHealthy ? 'AI Service Online' : 'AI Service Offline'}">Status</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card glass-card text-center">
+                <div class="card-body">
+                    <h2 th:text="${summary.avgConfidence + '%'}">0%</h2>
+                    <p class="text-muted mb-0">Average Confidence</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card glass-card text-center">
+                <div class="card-body">
+                    <h2 th:text="${summary.totalOverrides}">0</h2>
+                    <p class="text-muted mb-0">Human Overrides</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Info -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card glass-card">
+                <div class="card-header"><h6 class="mb-0">Current Model</h6></div>
+                <div class="card-body">
+                    <div th:each="entry : ${modelStatus}">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted" th:text="${entry.key}">Key</span>
+                            <span class="fw-bold" th:text="${entry.value}">Value</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card glass-card">
+                <div class="card-header"><h6 class="mb-0">Model Metrics</h6></div>
+                <div class="card-body">
+                    <div th:each="entry : ${modelMetrics}">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted" th:text="${entry.key}">Key</span>
+                            <span class="fw-bold" th:text="${entry.value}">Value</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Actions -->
+    <div class="card glass-card">
+        <div class="card-header"><h6 class="mb-0"><i class="bi bi-gear me-2"></i>Training Controls</h6></div>
+        <div class="card-body">
+            <p class="text-muted">Trigger model retraining using validated complaint data from human overrides and corrections.</p>
+            <form th:action="@{/admin/ai/train}" method="post">
+                <button type="submit" class="btn btn-primary" th:disabled="${!aiHealthy}">
+                    <i class="bi bi-play-fill me-1"></i>Trigger Model Training
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

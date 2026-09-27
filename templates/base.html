@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ग्वालियर जन समाधान | Gwalior JanSamadhan AI{% endblock %}</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0b192c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ग्वालियर समाधान">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    
+    <!-- Tailwind CSS with custom theme -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f9',
+                            100: '#d9e2ec',
+                            700: '#243b53',
+                            800: '#102a43',
+                            900: '#0b192c',
+                            950: '#060e18',
+                        },
+                        saffron: {
+                            50: '#fff7ed',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        },
+                        emerald: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased h-screen flex flex-col overflow-hidden" x-data="{ sidebarOpen: false }">
+    <!-- Top Tiranga Accent Line -->
+    <div class="tiranga-stripe w-full shrink-0"></div>
+    
+    <div class="flex-1 flex overflow-hidden">
+    
+    <!-- Sidebar -->
+    {% include 'components/sidebar.html' %}
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Navbar -->
+        {% include 'components/navbar.html' %}
+        
+        <!-- Main Area -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6 pb-20 md:pb-6">
+            
+            <!-- Flash Messages -->
+            <div id="flash-messages" class="fixed top-4 right-4 z-50 flex flex-col gap-2">
+                {% if flashes is defined and flashes %}
+                {% for category, message in flashes %}
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                     class="px-4 py-3 rounded shadow-md flex items-center justify-between {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' if category == 'error' else 'bg-blue-100 text-blue-800' }}">
+                    <span>{{ message }}</span>
+                    <button @click="show = false" class="ml-4 text-gray-500 hover:text-gray-700">&times;</button>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            
+            <!-- Page Content -->
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    </div>
+    
+    <!-- Mobile App Bottom Navigation Bar -->
+    {% include 'components/mobile_app_bar.html' %}
+
+    <!-- PWA Install Prompt Banner -->
+    {% include 'components/pwa_install_banner.html' %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

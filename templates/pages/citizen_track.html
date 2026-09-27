@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शिकायत स्थिति व सत्यापन | Track Grievance Status - JanSamadhan AI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif; }
+        .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between text-slate-800 antialiased selection:bg-orange-500 selection:text-white">
+
+    <!-- Top Tiranga Stripe -->
+    <div class="tiranga-stripe w-full"></div>
+
+    <!-- Official Header Bar -->
+    <header class="bg-[#0b192c] text-white shadow-xl border-b border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3.5">
+                <a href="/portal" class="w-11 h-11 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl flex items-center justify-center text-orange-400 font-bold shadow transition transform hover:scale-105">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </a>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-xl font-extrabold tracking-tight">जन समाधान <span class="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-bold uppercase">लाइव ट्रैकर</span></h1>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">पारदर्शी नागरिक शिकायत निगरानी व सत्यापन प्रणाली</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3 text-xs font-bold">
+                <a href="/portal" class="bg-gradient-to-r from-orange-600 to-emerald-700 hover:from-orange-500 hover:to-emerald-600 text-white px-4 py-2 rounded-xl shadow-md transition-all flex items-center">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    नई शिकायत (New Grievance)
+                </a>
+                <a href="/login" class="hidden sm:inline-flex items-center bg-white/10 hover:bg-white/20 text-slate-200 px-3 py-2 rounded-xl transition border border-white/10">
+                    अधिकारी लॉगिन (Staff)
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-8 flex-1">
+        
+        <!-- Search Grievance Card -->
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 mb-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-orange-500/5 rounded-full -mr-16 -mt-16 pointer-events-none"></div>
+            
+            <div class="flex items-center space-x-2 mb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+                <h2 class="text-lg font-black text-slate-900">शिकायत की स्थिति खोजें (Search Grievance Status)</h2>
+            </div>
+            <p class="text-xs text-slate-500 mb-5">शिकायत संदर्भ संख्या (उदा. <span class="font-mono-num font-bold text-orange-600">CMP-000001</span>) या अपना 10 अंकों का पंजीकृत मोबाइल नंबर दर्ज करें।</p>
+            
+            <form action="/portal/track" method="GET" class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <input type="text" 
+                           name="q" 
+                           value="{{ query }}" 
+                           required
+                           placeholder="शिकायत नंबर या 10 अंकों का मोबाइल नंबर डालें..." 
+                           class="w-full px-4 py-3.5 pl-11 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-slate-900 font-medium text-base shadow-sm">
+                    <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <button type="submit" class="px-8 py-3.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center text-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    खोजें (Search)
+                </button>
+            </form>
+        </div>
+
+        <!-- Feedback / Action Success Alert -->
+        {% if request.query_params.get('verified') %}
+        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-5 rounded-r-2xl shadow-sm mb-8 flex items-start space-x-3.5">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0 mt-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <div class="text-sm">
+                <p class="font-bold text-emerald-900">नागरिक सत्यापन दर्ज कर लिया गया है (Feedback Recorded):</p>
+                <p class="text-emerald-800 text-xs mt-1">आपकी प्रतिक्रिया प्रशासन के स्थायी रिकॉर्ड में दर्ज हो गई है। पारदर्शी शासन में सहयोग के लिए धन्यवाद।</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Results Section -->
+        {% if query %}
+            {% if results %}
+                <div class="space-y-8">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-bold text-slate-700 flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+                            कुल परिणाम मिले: <strong class="ml-1 text-slate-900 font-mono-num">{{ results|length }}</strong> शिकायतें
+                        </p>
+                        <span class="text-xs text-slate-500">लाइव डेटाबेस से सिंक</span>
+                    </div>
+
+                    {% for c in results %}
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow">
+                        
+                        <!-- Top Banner / Token Details -->
+                        <div class="px-6 py-4 bg-slate-900 text-white flex flex-wrap justify-between items-center gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">टोकन ID:</span>
+                                <span class="text-xl font-black text-amber-400 font-mono-num tracking-wider">{{ c.complaint_id }}</span>
+                                <span class="text-xs text-slate-400">({{ c.created_at.strftime('%d-%m-%Y %H:%M') if c.created_at else '' }})</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <!-- Status Badge -->
+                                {% if c.status == 'resolved' %}
+                                <span class="px-3.5 py-1 bg-blue-500/20 text-blue-300 font-bold text-xs rounded-full border border-blue-400/30 flex items-center">
+                                    <span class="w-2 h-2 rounded-full bg-blue-400 mr-1.5 animate-pulse"></span>
+                                    निस्तारित (Resolved - Verification Pending)
+                                </span>
+                                {% elif c.status == 'closed' %}
+                                <span class="px-3.5 py-1 bg-emerald-500/20 text-emerald-300 font-bold text-xs rounded-full border border-emerald-400/30 flex items-center">
+                                    <svg class="w-3.5 h-3.5 mr-1 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                    सत्यापित व बंद (Closed & Verified)
+                                </span>
+                                {% elif c.status == 'in_progress' %}
+                                <span class="px-3.5 py-1 bg-orange-500/20 text-orange-300 font-bold text-xs rounded-full border border-orange-400/30">
+                                    प्रगति पर (In Progress{{ ' - Reopened' if c.reopen_count else '' }})
+                                </span>
+                                {% else %}
+                                <span class="px-3.5 py-1 bg-slate-700 text-slate-300 font-bold text-xs rounded-full border border-slate-600">
+                                    लंबित (Pending Triage)
+                                </span>
+                                {% endif %}
+
+                                <a href="/portal/receipt/{{ c.complaint_id }}" target="_blank" class="text-xs font-bold text-slate-200 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1 rounded-lg border border-white/20 shadow-sm flex items-center transition">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                                    रसीद (Slip)
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- 5-Step Visual Progression Stepper -->
+                        <div class="px-6 py-6 bg-slate-50 border-b border-slate-200">
+                            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">प्रगति ट्रैकर (Resolution Stepper)</div>
+                            
+                            {% set current_step = 1 %}
+                            {% if c.analysis %}{% set current_step = 2 %}{% endif %}
+                            {% if c.assigned_department_id or c.assigned_user_id %}{% set current_step = 3 %}{% endif %}
+                            {% if c.status in ['in_progress', 'resolved', 'closed'] %}{% set current_step = 4 %}{% endif %}
+                            {% if c.status in ['resolved', 'closed'] %}{% set current_step = 5 %}{% endif %}
+
+                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                                <!-- Step 1 -->
+                                <div class="p-3 rounded-xl border {{ 'bg-emerald-50 border-emerald-300 text-emerald-900' if current_step >= 1 else 'bg-white border-slate-200 text-slate-400' }}">
+                                    <div class="flex items-center space-x-1.5 mb-1">
+                                        <span class="w-5 h-5 rounded-full {{ 'bg-emerald-600 text-white' if current_step >= 1 else 'bg-slate-200 text-slate-600' }} flex items-center justify-center text-[10px] font-bold">1</span>
+                                        <span class="text-xs font-bold">दर्ज (Logged)</span>
+                                    </div>
+                                    <p class="text-[10px] opacity-75">पोर्टल पर प्राप्त</p>
+                                </div>
+
+                                <!-- Step 2 -->
+                                <div class="p-3 rounded-xl border {{ 'bg-emerald-50 border-emerald-300 text-emerald-900' if current_step >= 2 else 'bg-white border-slate-200 text-slate-400' }}">
+                                    <div class="flex items-center space-x-1.5 mb-1">
+                                        <span class="w-5 h-5 rounded-full {{ 'bg-emerald-600 text-white' if current_step >= 2 else 'bg-slate-200 text-slate-600' }} flex items-center justify-center text-[10px] font-bold">2</span>
+                                        <span class="text-xs font-bold">AI विश्लेषण</span>
+                                    </div>
+                                    <p class="text-[10px] opacity-75">{{ c.analysis.priority if c.analysis else 'प्राथमिकता तय' }}</p>
+                                </div>
+
+                                <!-- Step 3 -->
+                                <div class="p-3 rounded-xl border {{ 'bg-emerald-50 border-emerald-300 text-emerald-900' if current_step >= 3 else 'bg-white border-slate-200 text-slate-400' }}">
+                                    <div class="flex items-center space-x-1.5 mb-1">
+                                        <span class="w-5 h-5 rounded-full {{ 'bg-emerald-600 text-white' if current_step >= 3 else 'bg-slate-200 text-slate-600' }} flex items-center justify-center text-[10px] font-bold">3</span>
+                                        <span class="text-xs font-bold">अधिकारी प्रेषित</span>
+                                    </div>
+                                    <p class="text-[10px] opacity-75">{{ c.assigned_department.name if c.assigned_department else 'वार्ड अधिकारी' }}</p>
+                                </div>
+
+                                <!-- Step 4 -->
+                                <div class="p-3 rounded-xl border {{ 'bg-emerald-50 border-emerald-300 text-emerald-900' if current_step >= 4 else 'bg-white border-slate-200 text-slate-400' }}">
+                                    <div class="flex items-center space-x-1.5 mb-1">
+                                        <span class="w-5 h-5 rounded-full {{ 'bg-emerald-600 text-white' if current_step >= 4 else 'bg-slate-200 text-slate-600' }} flex items-center justify-center text-[10px] font-bold">4</span>
+                                        <span class="text-xs font-bold">कार्य प्रगति पर</span>
+                                    </div>
+                                    <p class="text-[10px] opacity-75">स्थल पर निरीक्षण</p>
+                                </div>
+
+                                <!-- Step 5 -->
+                                <div class="p-3 rounded-xl border col-span-2 sm:col-span-1 {{ 'bg-emerald-100 border-emerald-400 text-emerald-950 font-bold' if c.status == 'closed' else ('bg-blue-50 border-blue-300 text-blue-900' if c.status == 'resolved' else 'bg-white border-slate-200 text-slate-400') }}">
+                                    <div class="flex items-center space-x-1.5 mb-1">
+                                        <span class="w-5 h-5 rounded-full {{ 'bg-emerald-700 text-white' if c.status == 'closed' else ('bg-blue-600 text-white' if c.status == 'resolved' else 'bg-slate-200 text-slate-600') }} flex items-center justify-center text-[10px] font-bold">5</span>
+                                        <span class="text-xs font-bold">{{ 'सत्यापित' if c.status == 'closed' else 'सत्यापन शेष' }}</span>
+                                    </div>
+                                    <p class="text-[10px] opacity-75">{{ 'नागरिक संतुष्ट' if c.status == 'closed' else 'नागरिक पुष्टि' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 space-y-6">
+                            
+                            <!-- Key Overview Details Grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <span class="font-bold text-slate-500 uppercase tracking-wider block">आवेदक (Citizen):</span>
+                                    <p class="font-bold text-slate-900 text-sm mt-0.5">{{ c.complainant_name or 'Anonymous' }}</p>
+                                    <p class="text-slate-500 font-mono-num">{{ c.complainant_contact }}</p>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-slate-500 uppercase tracking-wider block">वार्ड / क्षेत्र (Ward Location):</span>
+                                    <p class="font-bold text-slate-900 text-sm mt-0.5">{{ c.ward or 'General' }}</p>
+                                    <p class="text-slate-600">{{ c.area if c.area else '' }} {{ c.city if c.city else '' }}</p>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-slate-500 uppercase tracking-wider block">AI प्राथमिकता (Priority Level):</span>
+                                    <div class="mt-0.5 flex items-center space-x-2">
+                                        {% set prio = c.analysis.priority if c.analysis else 'PENDING' %}
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase
+                                            {{ 'bg-red-100 text-red-800 border border-red-300' if prio == 'CRITICAL' else 
+                                               'bg-orange-100 text-orange-800 border border-orange-300' if prio == 'HIGH' else
+                                               'bg-yellow-100 text-yellow-800 border border-yellow-300' if prio == 'MEDIUM' else
+                                               'bg-emerald-100 text-emerald-800 border border-emerald-300' }}">
+                                            {{ prio }}
+                                        </span>
+                                        <span class="text-slate-500 font-mono-num font-bold">({{ c.analysis.priority_score if c.analysis else '--' }}/100)</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mt-1">श्रेणी: <strong>{{ c.category.name if c.category else 'Uncategorized' }}</strong></p>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center">
+                                    <svg class="w-4 h-4 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                                    समस्या विवरण (Complaint Description):
+                                </h4>
+                                <p class="text-sm text-slate-800 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200">{{ c.complaint_text }}</p>
+                            </div>
+
+                            <!-- Side-by-Side Photographic Inspection Grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Citizen Evidence Photo -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
+                                                📸 नागरिक स्थल प्रमाण (Citizen Photo)
+                                            </span>
+                                            {% if c.evidence_photo %}
+                                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">संलग्न</span>
+                                            {% else %}
+                                            <span class="text-[10px] text-slate-400">फोटो संलग्न नहीं</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if c.evidence_photo %}
+                                        <a href="{{ c.evidence_photo }}" target="_blank" class="block group relative overflow-hidden rounded-lg">
+                                            <img src="{{ c.evidence_photo }}" alt="Citizen Ground Evidence" class="h-44 w-full object-cover rounded-lg border border-slate-300 group-hover:opacity-90 transition">
+                                            <div class="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[11px] py-1 text-center opacity-0 group-hover:opacity-100 transition">बड़ा फोटो देखने के लिए क्लिक करें</div>
+                                        </a>
+                                        {% else %}
+                                        <div class="h-44 w-full bg-slate-100 rounded-lg border border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">
+                                            नागरिक द्वारा फोटो अपलोड नहीं की गई
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Officer Resolution Proof Photo -->
+                                <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-200 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-bold text-emerald-900 uppercase tracking-wider flex items-center">
+                                                ✅ अधिकारी समाधान प्रमाण (Resolution Proof)
+                                            </span>
+                                            {% if c.resolution_photo %}
+                                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">स्थल सत्यापन फोटो</span>
+                                            {% elif c.status in ['resolved', 'closed'] %}
+                                            <span class="text-[10px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded">आख्या दर्ज</span>
+                                            {% else %}
+                                            <span class="text-[10px] text-slate-400">प्रतीक्षारत</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if c.resolution_photo %}
+                                        <a href="{{ c.resolution_photo }}" target="_blank" class="block group relative overflow-hidden rounded-lg">
+                                            <img src="{{ c.resolution_photo }}" alt="Officer Resolution Proof" class="h-44 w-full object-cover rounded-lg border-2 border-emerald-400 group-hover:opacity-90 transition shadow-sm">
+                                            <div class="absolute inset-x-0 bottom-0 bg-emerald-900/80 text-white text-[11px] py-1 text-center opacity-0 group-hover:opacity-100 transition">बड़ा फोटो देखने के लिए क्लिक करें</div>
+                                        </a>
+                                        {% else %}
+                                        <div class="h-44 w-full bg-slate-100 rounded-lg border border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">
+                                            {% if c.status in ['resolved', 'closed'] %}
+                                            अधिकारी ने कार्य पूर्ण किया (फोटो संलग्न नहीं)
+                                            {% else %}
+                                            कार्य पूर्ण होने पर अधिकारी का फोटो प्रमाण यहाँ दिखेगा
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% if c.resolution_notes %}
+                                    <div class="mt-2 text-xs text-emerald-950 bg-white p-2.5 rounded-lg border border-emerald-200">
+                                        <span class="font-bold text-emerald-900">अधिकारी कार्य आख्या:</span> {{ c.resolution_notes }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Citizen Sign-Off & Verification Action Form (When Resolved) -->
+                            {% if c.status == 'resolved' and c.citizen_feedback_status != 'satisfied' %}
+                            <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-6 sm:p-8 rounded-2xl border-2 border-amber-300 shadow-md">
+                                <div class="flex items-start space-x-3 mb-4">
+                                    <div class="w-9 h-9 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 flex-shrink-0 mt-0.5">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-base font-black text-amber-950">
+                                            नागरिक संतुष्टि सत्यापन आवश्यक (Citizen Verification Required)
+                                        </h3>
+                                        <p class="text-xs text-amber-900 mt-1">
+                                            विभागीय अधिकारी ने इस समस्या को "निस्तारित" चिह्नित किया है। कृपया ऊपर दिए गए कार्य-प्रमाण फोटो की जांच करें और पुष्टि करें कि क्या आपकी समस्या का समाधान हो चुका है?
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <form action="/portal/verify/{{ c.complaint_id }}" method="POST" class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">आपकी पुष्टि (Your Verdict):</label>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <label class="flex items-center space-x-3 bg-white p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:border-emerald-500 shadow-sm transition">
+                                                <input type="radio" name="satisfied" value="true" checked class="text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                                                <span class="text-sm font-bold text-emerald-900">हाँ, कार्य पूरा हुआ और मैं संतुष्ट हूँ (Satisfied)</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3 bg-white p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:border-red-500 shadow-sm transition">
+                                                <input type="radio" name="satisfied" value="false" class="text-red-600 focus:ring-red-500 w-4 h-4">
+                                                <span class="text-sm font-bold text-red-900">नहीं, काम अधूरा है या नहीं हुआ (Unsatisfied / Reopen)</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="comments" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">टिप्पणी / कारण (Remarks if unsatisfied):</label>
+                                        <input type="text" name="comments" placeholder="यदि काम अधूरा है तो कारण लिखें (उदा. मलबा अभी भी नहीं हटा)..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 text-sm shadow-sm">
+                                        <p class="text-[11px] text-amber-900 mt-1.5 flex items-center">
+                                            <svg class="w-3.5 h-3.5 mr-1 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                            अस्वीकार करने पर यह शिकायत स्वतः <strong>CRITICAL (आपातकालीन)</strong> प्राथमिकता के साथ खंड विकास अधिकारी (BDO) को एस्केलेट हो जाएगी।
+                                        </p>
+                                    </div>
+
+                                    <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-md transition transform active:scale-95">
+                                        सत्यापन दर्ज करें (Submit Citizen Verdict)
+                                    </button>
+                                </form>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-white rounded-2xl p-12 text-center border border-slate-200 shadow-sm">
+                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mx-auto mb-3">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800">कोई शिकायत नहीं मिली (No Grievances Found)</h3>
+                    <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">दर्ज किया गया शिकायत टोकन (उदा. CMP-000001) या मोबाइल नंबर सही नहीं है अथवा अभी कोई शिकायत पंजीकृत नहीं हुई है।</p>
+                    <a href="/portal" class="mt-5 inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-orange-600 to-emerald-700 text-white text-xs font-bold rounded-xl shadow hover:opacity-95 transition">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        नई शिकायत दर्ज करें
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
+        <div class="max-w-6xl mx-auto px-4">
+            <p class="font-medium text-slate-300">जन समाधान (JanSamadhan AI) — पारदर्शी नागरिक निगरानी तंत्र</p>
+            <p class="text-slate-500 mt-1">ग्राम पंचायत व नगर स्थानीय निकाय प्रशासन</p>
+        </div>
+    </footer>
+
+</body>
+</html>

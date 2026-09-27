@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Register</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="bi bi-person-plus auth-icon"></i>
+                <h2>Create Account</h2>
+                <p class="text-muted">Register as a Citizen</p>
+            </div>
+
+            <form th:action="@{/register}" method="post" th:object="${user}">
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" th:field="*{fullName}" class="form-control" placeholder="Your full name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" th:field="*{username}" class="form-control" placeholder="Choose a username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" th:field="*{email}" class="form-control" placeholder="your@email.com" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mobile</label>
+                    <input type="tel" th:field="*{mobile}" class="form-control" placeholder="9876543210">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" th:field="*{password}" class="form-control" placeholder="Min 6 characters" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 btn-lg">
+                    <i class="bi bi-person-plus me-2"></i>Register
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <span class="text-muted">Already have an account?</span>
+                <a th:href="@{/login}" class="ms-1">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

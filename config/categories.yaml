@@ -1,0 +1,103 @@
+categories:
+  - name: Water Supply
+    description: Water supply and distribution issues
+    risk_level: high
+    is_essential_service: true
+    department: Water Department
+    keywords: [water, supply, tap, pipeline, drinking water, bore, tank, leakage, contamination, पानी, जल, नल, पाइपलाइन, लीकेज, बोरिंग, टंकी, दूषित पानी, बदबूदार पानी, पेयजल, जल प्रदाय]
+  - name: Electricity
+    description: Power supply and electrical infrastructure
+    risk_level: high
+    is_essential_service: true
+    department: Electricity Department
+    keywords: [electricity, power, current, transformer, transfomer, wire, pole, outage, blackout, voltage, electric, electrocution, light chali, light gayab, बिजली, करंट, तार, खंभा, ट्रांसफार्मर, कटौती, स्पार्किंग, शॉर्ट सर्किट, पावर, फॉल्ट, वोल्टेज]
+  - name: Roads
+    description: Road conditions and maintenance
+    risk_level: medium
+    is_essential_service: false
+    department: Public Works
+    keywords: [road, pothole, highway, street, pavement, asphalt, broken road, crack, traffic, divider, सड़क, गड्ढा, गड्ढे, डिवाइडर, टूटी सड़क, हाईवे, डामर, मार्ग, पैचवर्क]
+  - name: Sanitation
+    description: Sanitation and hygiene
+    risk_level: high
+    is_essential_service: true
+    department: Sanitation Department
+    keywords: [sanitation, toilet, sewage, drainage, sewer, cleanliness, hygiene, waste, सफाई, सीवर, नाली, नाला, चोक, ओवरफ्लो, गंदा पानी, ड्रेनेज, बदबू, सीवरेज]
+  - name: Garbage/Waste
+    description: Waste collection and disposal
+    risk_level: medium
+    is_essential_service: true
+    department: Sanitation Department
+    keywords: [garbage, waste, trash, dump, rubbish, collection, bin, debris, littering, कचरा, कूड़ा, गंदगी, डंप, कचरा गाड़ी, डस्टबिन, मवेशी]
+  - name: Streetlights
+    description: Street lighting issues
+    risk_level: medium
+    is_essential_service: false
+    department: Electricity Department
+    keywords: [streetlight, street light, street lamp, streetlamp, dark street, lighting pole, bulb on pole, स्ट्रीट लाइट, खंभे की लाइट, रोड लाइट]
+  - name: Public Transport
+    description: Bus, metro, and other public transport
+    risk_level: medium
+    is_essential_service: true
+    department: Transport Department
+    keywords: [bus, metro, transport, train, auto, rickshaw, fare, route, stop, बस, ऑटो, रिक्शा, परिवहन, स्टॉप]
+  - name: Drainage
+    description: Drainage and flooding
+    risk_level: high
+    is_essential_service: true
+    department: Public Works
+    keywords: [drain, drainage, flood, waterlogging, clog, overflow, stormwater, gutter, जलभराव, नाला, नाली, उफान, बाढ़, बरसाती पानी, चेंबर]
+  - name: Public Safety
+    description: Safety, emergency, crime, and security concerns
+    risk_level: critical
+    is_essential_service: false
+    department: Safety Department
+    keywords: [safety, danger, accident, crime, theft, vandalism, fire, hazard, attack, threat, hit and run, hit-and-run, robbery, police, emergency, injured, injury, assault, violence, hit a pedestrian, runaway vehicle, license plate, suspect, आग, खतरा, दुर्घटना, हादसा, करंट, जानलेवा, आगजनी, करंट लगना, करंट का खतरा, चोरी, डकैती, पुलिस, आपातकाल, घायल, टक्कर, फरार, मारपीट, हमला]
+  - name: Parks
+    description: Parks, gardens, and recreational spaces
+    risk_level: low
+    is_essential_service: false
+    department: Environmental Services
+    keywords: [park, garden, playground, grass, swing, bench, walking track, lawn, greenery, fountain, पार्क, बगीचा, उद्यान, झूले, घास, बेंच, फव्वारा, खेल का मैदान]
+  - name: Government Services
+    description: Government office and administrative services
+    risk_level: low
+    is_essential_service: false
+    department: Administrative Services
+    keywords: [office, certificate, license, permit, registration, government, bureaucracy, document, प्रमाण पत्र, कार्यालय, पंजीयन, लाइसेंस, दस्तावेज]
+  - name: Healthcare
+    description: Healthcare facilities and services
+    risk_level: critical
+    is_essential_service: true
+    department: Health Department
+    keywords: [hospital, clinic, doctor, medicine, health, disease, infection, ambulance, patient, अस्पताल, डॉक्टर, दवाई, बीमारी, संक्रमण, मरीज, उल्टी, दस्त, डेंगू, मलेरिया, एम्बुलेंस, चिकित्सालय]
+  - name: Education
+    description: Schools, colleges, educational facilities
+    risk_level: medium
+    is_essential_service: false
+    department: Education Department
+    keywords: [school, college, teacher, student, education, classroom, exam, tuition, स्कूल, कॉलेज, शिक्षक, छात्र, छात्रा, विद्यालय, शाला]
+  - name: Infrastructure
+    description: General infrastructure issues
+    risk_level: medium
+    is_essential_service: false
+    department: Public Works
+    keywords: [bridge, building, structure, construction, demolition, wall, collapse, crack, foundation, पुल, इमारत, भवन, दीवार, ढहना, निर्माण]
+  - name: Environment
+    description: Environmental concerns
+    risk_level: medium
+    is_essential_service: false
+    department: Environmental Services
+    keywords: [pollution, noise, air, dust, smoke, chemical, toxic, tree, green, environment, contamination, प्रदूषण, धुआं, धूल, शोर, पेड़, पर्यावरण]
+  - name: Financial/Payment
+    description: Financial or payment-related issues
+    risk_level: low
+    is_essential_service: false
+    department: Finance Department
+    keywords: [payment, bill, fee, charge, refund, fine, tax, money, account, overcharge, बिल, भुगतान, शुल्क, टैक्स, रसीद]
+  - name: Other
+    description: Uncategorized complaints
+    risk_level: low
+    is_essential_service: false
+    department: Administrative Services
+    keywords: []

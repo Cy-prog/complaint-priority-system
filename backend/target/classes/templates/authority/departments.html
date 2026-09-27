@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Department Operations & SLA</title>
+</head>
+<body>
+<div layout:fragment="content">
+<div class="container-fluid py-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-1 text-dark fw-bold"><i class="bi bi-building-gear text-primary me-2"></i>Department Performance & Workload</h3>
+            <p class="text-muted mb-0">Departmental efficiency ratings, complaint allocation, and category distribution</p>
+        </div>
+        <a th:href="@{/authority/dashboard}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Executive View
+        </a>
+    </div>
+
+    <!-- Category Distribution Matrix -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card glass-card h-100">
+                <div class="card-header fw-bold"><i class="bi bi-pie-chart me-2"></i>Departmental Grievance Distribution</div>
+                <div class="card-body">
+                    <canvas id="deptCategoryChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card glass-card h-100">
+                <div class="card-header fw-bold"><i class="bi bi-info-circle me-2"></i>Department Allocation Rules</div>
+                <div class="card-body">
+                    <p class="text-muted small">
+                        Complaints are auto-routed by the AI NLP Pipeline to appropriate municipal wings according to category severity, location, and statutory SLA limits.
+                    </p>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <span>Emergency Safety Services</span>
+                            <span class="badge bg-danger">Critical: 4 Hr SLA</span>
+                        </div>
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <span>Water Supply & Contamination</span>
+                            <span class="badge bg-warning text-dark">High: 12 Hr SLA</span>
+                        </div>
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <span>Roads, Potholes & Infrastructure</span>
+                            <span class="badge bg-info text-dark">Medium: 48 Hr SLA</span>
+                        </div>
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <span>Sanitation, Waste & General</span>
+                            <span class="badge bg-success">Low: 168 Hr SLA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments Table -->
+    <div class="card glass-card">
+        <div class="card-header fw-bold">
+            <i class="bi bi-list-columns-reverse me-2"></i>Active Municipal Administrative Units
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Dept ID</th>
+                            <th>Department Name</th>
+                            <th>Code</th>
+                            <th>Department Head Email</th>
+                            <th>Operational Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${departments}">
+                            <td th:text="${d.id}">1</td>
+                            <td class="fw-bold" th:text="${d.name}">Water Works</td>
+                            <td><span class="badge bg-primary" th:text="${d.code}">WW</span></td>
+                            <td th:text="${d.contactEmail != null ? d.contactEmail : d.email}">dept@civic.gov.in</td>
+                            <td>
+                                <span class="badge" th:classappend="${d.isActive ? 'bg-success' : 'bg-danger'}"
+                                      th:text="${d.isActive ? 'Active' : 'Offline'}">Active</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<th:block layout:fragment="scripts">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+    const catData = /*[[${categoryDistribution}]]*/ {};
+    const catCtx = document.getElementById('deptCategoryChart');
+    if (catCtx) {
+        new Chart(catCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(catData),
+                datasets: [{
+                    label: 'Complaints',
+                    data: Object.values(catData),
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+</script>
+</th:block>
+</body>
+</html>

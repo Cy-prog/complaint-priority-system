@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ग्वालियर जन समाधान | Gwalior JanSamadhan - Citizen Grievance Portal</title>
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0b192c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ग्वालियर समाधान">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-hindi { font-family: 'Tiro Devanagari Hindi', serif; }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .mic-active {
+            animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between text-slate-800 pb-16 md:pb-0">
+
+    <!-- Top Gov / Civic Header Bar -->
+    <header class="bg-gradient-to-r from-amber-600 via-orange-600 to-emerald-700 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-orange-600 font-bold shadow">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight">ग्वालियर जन समाधान <span class="text-xs bg-white/20 px-2 py-0.5 rounded font-normal uppercase ml-1">Gwalior JanSamadhan</span></h1>
+                    <p class="text-xs text-orange-100 font-medium">नगर पालिक निगम व जिला प्रशासन, ग्वालियर — जन-शिकायत निवारण प्रणाली</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4 text-sm font-medium">
+                <a href="/portal/track" class="bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-lg transition-colors flex items-center">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <span>स्थिति देखें (Track)</span>
+                </a>
+                <a href="/login" class="bg-emerald-800 hover:bg-emerald-900 px-3 py-1.5 rounded-lg transition-colors text-emerald-100 flex items-center">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    <span>अधिकारी लॉगिन (Staff)</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Citizen Submission Container -->
+    <main class="max-w-4xl w-full mx-auto px-4 py-8 flex-1">
+        
+        <!-- Welcome Alert Banner -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl shadow-sm mb-8 flex items-start space-x-3">
+            <svg class="w-6 h-6 text-indigo-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div class="text-sm">
+                <p class="font-bold text-indigo-900">ग्वालियर नागरिक सहायता सूचना (GMC Citizen Notice):</p>
+                <p class="text-indigo-800 mt-0.5">आपकी समस्या को AI तकनीक द्वारा तुरंत जांचकर सीधे नगर पालिक निगम ग्वालियर (GMC), जोनल कार्यालय व संबंधित विभाग को भेजा जाएगा। आप बोलकर (माइक) भी शिकायत दर्ज कर सकते हैं।</p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden" x-data="complaintForm()">
+            <div class="px-6 py-5 bg-slate-900 text-white flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold">नई शिकायत दर्ज करें (Register Public Grievance)</h2>
+                    <p class="text-xs text-slate-400">सभी आवश्यक विवरण भरें। कोई पासवर्ड या खाता बनाने की आवश्यकता नहीं है।</p>
+                </div>
+                <span class="text-xs bg-emerald-500/20 text-emerald-300 font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30">ग्वालियर जन-सेवा</span>
+            </div>
+
+            <form action="/portal/submit" method="POST" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-6">
+                
+                <!-- Quick Category Suggestion Pills -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">त्वरित श्रेणी चुनें (Quick Issue Topic):</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" @click="addCategoryTag('💧 पेयजल व पाइपलाइन समस्या (Water Supply / Leakage)')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100 transition">💧 पेयजल (Water)</button>
+                        <button type="button" @click="addCategoryTag('⚡ बिजली कटौती व खुला तार (Electricity / Exposed Wire)')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition">⚡ बिजली (Electricity)</button>
+                        <button type="button" @click="addCategoryTag('🛣️ टूटी सड़क व गड्ढे (Road Damage / Potholes)')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 transition">🛣️ सड़क (Roads)</button>
+                        <button type="button" @click="addCategoryTag('🧹 कचरा व गंदगी ढेर (Sanitation / Garbage Dump)')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition">🧹 सफाई (Garbage)</button>
+                        <button type="button" @click="addCategoryTag('🌊 नाली व जलभराव (Drainage Overflow / Waterlogging)')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-800 border border-cyan-200 hover:bg-cyan-100 transition">🌊 नाली (Drainage)</button>
+                        <button type="button" @click="addCategoryTag('🚨 आपातकालीन खतरा (Emergency Safety Hazard)')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-red-50 text-red-800 border border-red-200 hover:bg-red-100 transition">🚨 खतरा (Emergency)</button>
+                    </div>
+                </div>
+
+                <!-- Complaint Text with Voice Input Integration -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="complaint_text" class="block text-sm font-bold text-slate-900">
+                            समस्या का विवरण (Complaint Description) <span class="text-red-500">*</span>
+                        </label>
+                        
+                        <!-- Voice Dictation Button -->
+                        <button type="button" 
+                                @click="toggleSpeech()" 
+                                :class="isListening ? 'bg-red-600 text-white recording-pulse' : 'bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200'"
+                                class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold shadow-sm transition-all">
+                            <span class="mr-2" x-show="!isListening">🎙️</span>
+                            <div class="flex items-center space-x-1 mr-2" x-show="isListening">
+                                <span class="w-1 bg-white rounded-full wave-bar-1"></span>
+                                <span class="w-1 bg-white rounded-full wave-bar-2"></span>
+                                <span class="w-1 bg-white rounded-full wave-bar-3"></span>
+                                <span class="w-1 bg-white rounded-full wave-bar-4"></span>
+                            </div>
+                            <span x-text="isListening ? 'माइक चालू है (रोकने के लिए दबाएं)...' : 'बोलकर लिखें (Voice Typing)'"></span>
+                        </button>
+                    </div>
+
+                    <div class="relative">
+                        <textarea id="complaint_text" 
+                                  name="complaint_text" 
+                                  x-model="complaintText" 
+                                  required 
+                                  rows="4" 
+                                  placeholder="उदाहरण: वार्ड 18 महाराज बाड़ा में मुख्य सड़क पर पानी की पाइपलाइन फूट गई है और 2 दिन से घरों में गंदा पानी आ रहा है... (या ऊपर माइक बटन दबाकर बोलें)"
+                                  class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-slate-900 text-base shadow-sm transition-all"></textarea>
+                    </div>
+
+                    <!-- Voice Status Alert -->
+                    <div x-show="isListening" class="mt-2 text-xs font-semibold text-red-600 flex items-center animate-pulse">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-600 mr-2"></span>
+                        माइक चालू है। कृपया स्पष्ट बोलें — यह स्वतः पाठ्य रूप में दर्ज हो रहा है...
+                    </div>
+                </div>
+
+                <!-- Location Fields (Ward & Area/Mohalla) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="ward" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            वार्ड / क्षेत्र (Gwalior Municipal Ward) <span class="text-red-500">*</span>
+                        </label>
+                        <select id="ward" name="ward" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-slate-800 bg-white shadow-sm font-medium">
+                            <option value="">-- ग्वालियर वार्ड चुनें (Select Ward) --</option>
+                            {% for w in wards %}
+                            <option value="{{ w }}">{{ w }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="area" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            स्थान / लैंडमार्क (Locality / Landmark)
+                        </label>
+                        <input type="text" id="area" name="area" placeholder="उदा. महाराज बाड़ा, थाटीपुर चौराहा, फूलबाग, हजीरा, सिटी सेंटर" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-slate-800 shadow-sm">
+                    </div>
+                </div>
+
+                <!-- Citizen Contact Info -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="complainant_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            आपका नाम (Citizen Full Name)
+                        </label>
+                        <input type="text" id="complainant_name" name="complainant_name" placeholder="उदा. रमेश कुमार" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-slate-800 shadow-sm">
+                    </div>
+
+                    <div>
+                        <label for="complainant_contact" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            मोबाइल नंबर (Mobile Number) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" id="complainant_contact" name="complainant_contact" required pattern="[0-9]{10}" placeholder="10 अंकों का मोबाइल नंबर (SMS स्थिति के लिए)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-slate-800 shadow-sm">
+                        <p class="text-[11px] text-slate-500 mt-1">शिकायत की स्थिति जानने व समाधान SMS के लिए आवश्यक।</p>
+                    </div>
+                </div>
+
+                <!-- Photo Evidence Upload with Live Preview -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        समस्या का फोटो प्रमाण (Evidence Photo) <span class="text-slate-400 font-normal">(वैकल्पिक / Optional)</span>
+                    </label>
+                    <div class="mt-1 flex flex-col justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl hover:border-orange-500 transition-colors bg-slate-50 relative">
+                        <div class="space-y-2 text-center" x-show="!imagePreview">
+                            <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-slate-600 justify-center">
+                                <button type="button" @click="$refs.fileInput.click()" class="font-bold text-orange-600 hover:text-orange-500 cursor-pointer">फोटो चुनें या मोबाइल कैमरा से खींचे</button>
+                            </div>
+                            <p class="text-xs text-slate-500">PNG, JPG, JPEG (अधिकतम 10MB)</p>
+                        </div>
+
+                        <!-- Image Preview Box -->
+                        <div x-show="imagePreview" class="relative flex flex-col items-center">
+                            <img :src="imagePreview" alt="Evidence Preview" class="max-h-56 rounded-lg object-contain shadow-md border border-slate-200">
+                            <div class="mt-2 flex items-center space-x-3">
+                                <span class="text-xs font-semibold text-emerald-700" x-text="fileName"></span>
+                                <button type="button" @click="clearPhoto()" class="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded">फोटो हटाएं</button>
+                            </div>
+                        </div>
+
+                        <input type="file" 
+                               name="evidence_file" 
+                               x-ref="fileInput" 
+                               accept="image/*" 
+                               capture="environment"
+                               @change="handlePhotoSelect($event)"
+                               class="hidden">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <p class="text-xs text-slate-500">दर्ज करने पर आपको तुरंत डिजिटल रसीद व ट्रैकिंग नंबर मिलेगा।</p>
+                    <button type="submit" 
+                            class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-orange-600 to-emerald-700 hover:from-orange-700 hover:to-emerald-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform active:scale-95 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        शिकायत दर्ज करें (Submit Grievance)
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Emergency Helpline Contacts Grid -->
+        <div class="mt-12 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 mr-2"></span>
+                ग्वालियर आपातकालीन जन-सुविधा संपर्क सूत्र (Gwalior Emergency Helplines)
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <p class="text-slate-500 font-medium">नगर निगम कंट्रोल रूम (GMC)</p>
+                    <p class="font-bold text-slate-900 text-sm mt-0.5">0751-2438300</p>
+                    <p class="text-[10px] text-emerald-600 font-semibold mt-0.5">टोल-फ्री: 1800-233-1311</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <p class="text-slate-500 font-medium">विद्युत वितरण कंपनी (Central Discom)</p>
+                    <p class="font-bold text-slate-900 text-sm mt-0.5">1912</p>
+                    <p class="text-[10px] text-slate-500 mt-0.5">रोशनी घर: 0751-2441200</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <p class="text-slate-500 font-medium">PHE जल प्रदाय नियंत्रण</p>
+                    <p class="font-bold text-slate-900 text-sm mt-0.5">0751-2438345</p>
+                    <p class="text-[10px] text-blue-600 font-semibold mt-0.5">तिघरा/मोतीझील फीडर</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <p class="text-slate-500 font-medium">जयारोग्य चिकित्सालय (JAH)</p>
+                    <p class="font-bold text-slate-900 text-sm mt-0.5">0751-2403200</p>
+                    <p class="text-[10px] text-red-600 font-semibold mt-0.5">आपातकालीन 108 / 112</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
+        <div class="max-w-6xl mx-auto px-4">
+            <p class="font-medium text-slate-300">ग्वालियर जन समाधान (Gwalior JanSamadhan AI) — नगर पालिक निगम ग्वालियर व जिला प्रशासन सुशासन पहल</p>
+            <p class="text-slate-500 mt-1">पारदर्शी, जवाबदेह व त्वरित ग्वालियर शहरी व ग्रामीण जन-शिकायत निवारण के लिए समर्पित।</p>
+        </div>
+    </footer>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    {% include 'components/mobile_app_bar.html' %}
+
+    <!-- PWA Install Prompt Banner -->
+    {% include 'components/pwa_install_banner.html' %}
+
+    <!-- Alpine.js Speech Recognition & Media Script -->
+    <script>
+        function complaintForm() {
+            return {
+                complaintText: '',
+                fileName: '',
+                imagePreview: null,
+                isListening: false,
+                recognition: null,
+
+                init() {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (SpeechRecognition) {
+                        this.recognition = new SpeechRecognition();
+                        this.recognition.continuous = true;
+                        this.recognition.interimResults = true;
+                        this.recognition.lang = 'hi-IN'; // Default Hindi, also understands Hinglish
+
+                        this.recognition.onresult = (event) => {
+                            let transcript = '';
+                            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                                transcript += event.results[i][0].transcript;
+                            }
+                            if (transcript) {
+                                this.complaintText = (this.complaintText ? this.complaintText + ' ' : '') + transcript;
+                            }
+                        };
+
+                        this.recognition.onerror = (event) => {
+                            console.error('Speech recognition error:', event.error);
+                            this.isListening = false;
+                        };
+
+                        this.recognition.onend = () => {
+                            this.isListening = false;
+                        };
+                    }
+                },
+
+                toggleSpeech() {
+                    if (!this.recognition) {
+                        alert('आपका ब्राउज़र वॉयस टाइपिंग को सपोर्ट नहीं करता। कृपया Google Chrome या Microsoft Edge का उपयोग करें।');
+                        return;
+                    }
+
+                    if (this.isListening) {
+                        this.recognition.stop();
+                        this.isListening = false;
+                    } else {
+                        try {
+                            this.recognition.start();
+                            this.isListening = true;
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }
+                },
+
+                handlePhotoSelect(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.fileName = file.name;
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.imagePreview = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                clearPhoto() {
+                    this.imagePreview = null;
+                    this.fileName = '';
+                    if (this.$refs.fileInput) {
+                        this.$refs.fileInput.value = '';
+                    }
+                },
+
+                addCategoryTag(tag) {
+                    if (!this.complaintText) {
+                        this.complaintText = tag + ': ';
+                    } else {
+                        this.complaintText = this.complaintText.trim() + '\n' + tag + ': ';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

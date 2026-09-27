@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Project specific
+data/complaints.db
+data/chroma_db/
+ai/models/*.pkl
+ai/models/*.joblib
+.pytest_cache/
+alembic/versions/*.py
+!alembic/versions/__init__.py
+node_modules/

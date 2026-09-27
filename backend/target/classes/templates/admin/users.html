@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+<head><title>Users</title></head>
+<body>
+<div layout:fragment="content">
+<div class="container-fluid py-4 px-4">
+    <h3 class="mb-4"><i class="bi bi-people-fill me-2"></i>User Management</h3>
+    <div class="card glass-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Full Name</th><th>Role</th><th>Active</th><th>Created</th></tr></thead>
+                    <tbody>
+                        <tr th:each="u : ${users}">
+                            <td th:text="${u.id}">1</td>
+                            <td th:text="${u.username}">user</td>
+                            <td th:text="${u.email}">email</td>
+                            <td th:text="${u.fullName}">name</td>
+                            <td><span class="badge" th:classappend="${u.role.name() == 'ADMIN' ? 'bg-primary' : u.role.name() == 'HIGHER_AUTHORITY' ? 'bg-purple' : 'bg-success'}" th:text="${u.role}">R</span></td>
+                            <td><i class="bi" th:classappend="${u.isActive ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-danger'}"></i></td>
+                            <td th:text="${#temporals.format(u.createdAt, 'dd MMM yyyy')}">D</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

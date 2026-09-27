@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}New Complaint | ComplaintAI{% endblock %}
+{% block page_title %}Submit New Complaint{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white shadow-sm rounded-2xl border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+            <div>
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center">
+                    <span class="w-2.5 h-2.5 rounded-full bg-orange-500 mr-2"></span>
+                    शिकायत प्रविष्टि फॉर्म (Official Grievance Entry)
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">प्रशासनिक व ऑपरेटर स्तर पर नागरिक शिकायत दर्ज करने का फॉर्म</p>
+            </div>
+            <a href="/complaints" class="text-xs font-bold text-slate-500 hover:text-slate-800 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm transition">रद्द करें (Cancel)</a>
+        </div>
+        
+        <div class="p-6 sm:p-8">
+            <form action="/complaints/new" method="POST" class="space-y-6">
+                <!-- Complaint Text -->
+                <div>
+                    <label for="complaint_text" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">शिकायत विवरण (Complaint Details) <span class="text-red-500">*</span></label>
+                    <textarea id="complaint_text" name="complaint_text" rows="4" required minlength="10"
+                              class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-slate-900 text-sm shadow-sm"
+                              placeholder="नागरिक द्वारा बताई गई समस्या का विस्तृत विवरण यहाँ दर्ज करें..."></textarea>
+                    <p class="mt-1.5 text-[11px] text-slate-500">दर्ज करने पर हमारा AI इंजन स्वतः प्राथमिकता, विभाग, जोखिम व SLA समय-सीमा निर्धारित करेगा।</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Complainant Info -->
+                    <div class="space-y-4 bg-slate-50/70 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2">आवेदक विवरण (Citizen Info)</h3>
+                        <div>
+                            <label for="complainant_name" class="block text-xs font-bold text-slate-600 uppercase mb-1">आवेदक का नाम (Name)</label>
+                            <input type="text" name="complainant_name" id="complainant_name" placeholder="उदा. सुरेश शर्मा" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-xs text-slate-900">
+                        </div>
+                        <div>
+                            <label for="complainant_contact" class="block text-xs font-bold text-slate-600 uppercase mb-1">मोबाइल नंबर (Mobile)</label>
+                            <input type="text" name="complainant_contact" id="complainant_contact" placeholder="10 अंकों का मोबाइल" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-xs text-slate-900 font-mono">
+                        </div>
+                    </div>
+                    
+                    <!-- Location Info -->
+                    <div class="space-y-4 bg-slate-50/70 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2">स्थान व वार्ड (Location)</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="ward" class="block text-xs font-bold text-slate-600 uppercase mb-1">वार्ड (Ward)</label>
+                                <input type="text" name="ward" id="ward" placeholder="उदा. वार्ड 4" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-xs text-slate-900">
+                            </div>
+                            <div>
+                                <label for="city" class="block text-xs font-bold text-slate-600 uppercase mb-1">शहर / ब्लॉक (City)</label>
+                                <input type="text" name="city" id="city" placeholder="उदा. रामपुर" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-xs text-slate-900">
+                            </div>
+                            <div class="col-span-2">
+                                <label for="area" class="block text-xs font-bold text-slate-600 uppercase mb-1">मोहल्ला / लैंडमार्क (Area)</label>
+                                <input type="text" name="area" id="area" placeholder="उदा. प्राथमिक विद्यालय के पास" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-xs text-slate-900">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-5 border-t border-slate-200 flex justify-end space-x-3">
+                    <button type="reset" class="px-5 py-2.5 border border-slate-300 text-xs font-bold rounded-xl text-slate-600 bg-white hover:bg-slate-50 transition">
+                        रीसेट (Clear)
+                    </button>
+                    <button type="submit" class="inline-flex items-center px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 shadow-md transition">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        शिकायत दर्ज करें व AI विश्लेषण प्रारंभ करें
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

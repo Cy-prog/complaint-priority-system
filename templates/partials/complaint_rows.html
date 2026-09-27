@@ -1,0 +1,42 @@
+{% from 'components/priority_badge.html' import priority_badge, status_badge, confidence_indicator %}
+{% for comp in complaints.items | default([]) %}
+<tr class="hover:bg-slate-50/80 cursor-pointer transition-colors" onclick="window.location.href='/complaints/{{ comp.complaint_id }}'">
+    <td class="px-6 py-4 whitespace-nowrap text-xs font-black text-slate-900 font-mono">
+        <div class="flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full {{ 'bg-red-500' if comp.analysis and comp.analysis.priority == 'CRITICAL' else ('bg-orange-500' if comp.analysis and comp.analysis.priority == 'HIGH' else ('bg-yellow-500' if comp.analysis and comp.analysis.priority == 'MEDIUM' else 'bg-emerald-500')) }}"></span>
+            <span>{{ comp.complaint_id }}</span>
+        </div>
+        {% if comp.ward %}
+        <span class="text-[10px] text-slate-500 block font-sans mt-0.5">{{ comp.ward }}{{ ' (' + comp.area + ')' if comp.area else '' }}</span>
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 text-xs text-slate-700 max-w-xs xl:max-w-md truncate" title="{{ comp.complaint_text }}">
+        <div class="font-medium truncate">{{ comp.complaint_text | default('') }}</div>
+        {% if comp.complainant_name %}
+        <span class="text-[10px] text-slate-400">आवेदक: {{ comp.complainant_name }}</span>
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-700 font-semibold">
+        <span class="bg-slate-100 text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200">
+            {{ comp.category.name if comp.category else 'Uncategorized' }}
+        </span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap">{{ priority_badge(comp.analysis.priority if comp.analysis else 'UNKNOWN') }}</td>
+    <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">{{ status_badge(comp.status) }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500 font-mono hidden lg:table-cell">{{ comp.created_at.strftime('%d-%m-%Y') if comp.created_at else 'N/A' }}</td>
+    <td class="px-6 py-4 whitespace-nowrap hidden xl:table-cell">{{ confidence_indicator(comp.analysis.confidence if comp.analysis else 0) }}</td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="7" class="px-6 py-12 text-center text-xs text-slate-400">कोई शिकायत नहीं मिली (No records found matching criteria).</td>
+</tr>
+{% endfor %}
+
+{% if complaints and complaints.total_pages %}
+<tr>
+    <td colspan="7" class="p-0">
+        {% from 'components/pagination.html' import paginate %}
+        {{ paginate(complaints.page, complaints.total_pages, '/complaints') }}
+    </td>
+</tr>
+{% endif %}

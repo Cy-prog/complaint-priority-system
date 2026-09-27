@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings | ComplaintAI{% endblock %}
+{% block page_title %}System Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl space-y-6">
+    <p class="text-sm text-gray-600 mb-6">Manage AI classification parameters and system configurations.</p>
+    
+    <!-- Model Weights -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-900">Priority Scoring Weights</h2>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Read-Only</span>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-100">
+                    <span class="text-sm font-medium text-gray-700">Severity</span>
+                    <span class="text-sm text-gray-900 font-semibold">30%</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-100">
+                    <span class="text-sm font-medium text-gray-700">Urgency</span>
+                    <span class="text-sm text-gray-900 font-semibold">25%</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-100">
+                    <span class="text-sm font-medium text-gray-700">Safety Risk</span>
+                    <span class="text-sm text-gray-900 font-semibold">25%</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-100">
+                    <span class="text-sm font-medium text-gray-700">Impact</span>
+                    <span class="text-sm text-gray-900 font-semibold">15%</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-100">
+                    <span class="text-sm font-medium text-gray-700">Duration</span>
+                    <span class="text-sm text-gray-900 font-semibold">5%</span>
+                </div>
+            </div>
+            <p class="mt-4 text-xs text-gray-500">These weights are used by the AI engine to calculate the final priority score (0-100).</p>
+        </div>
+    </div>
+    
+    <!-- Thresholds -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-900">Priority Thresholds</h2>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Read-Only</span>
+        </div>
+        <div class="p-6">
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <div class="w-24"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white">CRITICAL</span></div>
+                    <div class="flex-1 ml-4 h-2 bg-gray-200 rounded-full"><div class="h-full bg-red-600 rounded-full" style="width: 15%; margin-left: 85%;"></div></div>
+                    <div class="w-16 text-right text-sm font-medium text-gray-700">85 - 100</div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-24"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500 text-white">HIGH</span></div>
+                    <div class="flex-1 ml-4 h-2 bg-gray-200 rounded-full"><div class="h-full bg-orange-500 rounded-full" style="width: 15%; margin-left: 70%;"></div></div>
+                    <div class="w-16 text-right text-sm font-medium text-gray-700">70 - 84</div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-24"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-gray-900">MEDIUM</span></div>
+                    <div class="flex-1 ml-4 h-2 bg-gray-200 rounded-full"><div class="h-full bg-yellow-500 rounded-full" style="width: 30%; margin-left: 40%;"></div></div>
+                    <div class="w-16 text-right text-sm font-medium text-gray-700">40 - 69</div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-24"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">LOW</span></div>
+                    <div class="flex-1 ml-4 h-2 bg-gray-200 rounded-full"><div class="h-full bg-green-500 rounded-full" style="width: 40%;"></div></div>
+                    <div class="w-16 text-right text-sm font-medium text-gray-700">0 - 39</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SLA Policies -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-900">SLA Policies</h2>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Read-Only</span>
+        </div>
+        <div class="p-0 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Response Time (Max)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resolution Time (Max)</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white">CRITICAL</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2 Hours</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">12 Hours</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500 text-white">HIGH</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">8 Hours</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">48 Hours</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-gray-900">MEDIUM</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">24 Hours</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">7 Days</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">LOW</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">48 Hours</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">14 Days</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
