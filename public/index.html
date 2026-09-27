@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse AI - Municipal Complaint Prioritization Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --navy-card: rgba(15, 23, 42, 0.75);
+            --border: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #0f172a 50%, #020617 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Outfit', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+        .hero-title {
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            font-weight: 900;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .badge-pill {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(129, 140, 248, 0.35);
+            color: #a5b4fc;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 1.8s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .interactive-card {
+            transition: all 0.25s ease;
+        }
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 12px 30px rgba(79, 70, 229, 0.2);
+        }
+        .priority-badge {
+            font-weight: 800;
+            padding: 0.3rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .priority-critical { background: #ef4444; color: white; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+        .priority-high { background: #f59e0b; color: #1e1b4b; }
+        .priority-medium { background: #3b82f6; color: white; }
+        .priority-low { background: #10b981; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-expand-lg border-bottom py-3" style="border-color: rgba(255,255,255,0.08) !important;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center text-white gap-2" href="#">
+                <i class="bi bi-shield-check text-primary fs-3"></i>
+                <span class="fw-bold brand-font fs-4">CivicPulse</span>
+                <span class="badge-pill ms-2"><span class="pulse-dot"></span>Cloud Gateway</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a href="https://github.com/Cy-prog/complaint-priority-system" target="_blank" class="btn btn-outline-light btn-sm px-3 rounded-pill">
+                    <i class="bi bi-github me-1"></i>GitHub Repository
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Hero -->
+    <div class="container py-5">
+        <div class="row align-items-center g-5 py-4">
+            <div class="col-lg-7">
+                <div class="badge-pill mb-3">
+                    <i class="bi bi-cpu-fill text-info"></i>19-Stage Hybrid NLP &amp; Statutory SLA Triage
+                </div>
+                <h1 class="hero-title mb-3">
+                    AI-Powered Civic Complaint Priority Platform
+                </h1>
+                <p class="lead text-secondary mb-4" style="color: #94a3b8 !important;">
+                    CivicPulse intelligently classifies citizen grievances, evaluates multi-dimensional risk scores (Urgency, Severity, Public Impact, Safety), routes complaints to municipal departments, and enforces strict statutory SLAs.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#simulator" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm" style="background: var(--primary);">
+                        <i class="bi bi-lightning-charge-fill me-1"></i>Try AI Triage Scanner
+                    </a>
+                    <a href="https://github.com/Cy-prog/complaint-priority-system" target="_blank" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                        <i class="bi bi-hdd-network me-1"></i>Deploy via Render
+                    </a>
+                </div>
+            </div>
+
+            <!-- Key Metrics Card -->
+            <div class="col-lg-5">
+                <div class="glass-panel p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold text-uppercase small text-muted">Statutory SLA Windows</span>
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-2">Enforced</span>
+                    </div>
+                    <div class="list-group list-group-flush gap-2">
+                        <div class="glass-panel p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-badge priority-critical">Critical</span>
+                                <small class="d-block text-white-50 mt-1">Live wire, gas leak, building collapse</small>
+                            </div>
+                            <span class="fs-5 fw-bold font-monospace text-danger">4 Hours</span>
+                        </div>
+                        <div class="glass-panel p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-badge priority-high">High</span>
+                                <small class="d-block text-white-50 mt-1">Major water burst, hospital area outage</small>
+                            </div>
+                            <span class="fs-5 fw-bold font-monospace text-warning">12 Hours</span>
+                        </div>
+                        <div class="glass-panel p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-badge priority-medium">Medium</span>
+                                <small class="d-block text-white-50 mt-1">Dangerous pothole, street lamp failure</small>
+                            </div>
+                            <span class="fs-5 fw-bold font-monospace text-info">48 Hours</span>
+                        </div>
+                        <div class="glass-panel p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-badge priority-low">Low</span>
+                                <small class="d-block text-white-50 mt-1">Garbage accumulation, routine park care</small>
+                            </div>
+                            <span class="fs-5 fw-bold font-monospace text-success">168 Hours</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive AI Pre-Scanner Simulator -->
+        <div id="simulator" class="glass-panel p-4 p-md-5 my-5">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <div class="d-inline-flex align-items-center gap-2 mb-2 text-info small fw-bold">
+                        <i class="bi bi-stars"></i>Interactive Demo
+                    </div>
+                    <h3 class="fw-bold mb-2">Live AI Grievance Scanner</h3>
+                    <p class="text-secondary small mb-3">
+                        Type or pick a real-world scenario below to simulate the NLP Classification and Risk Scoring in real-time.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <button type="button" class="btn btn-sm btn-outline-light rounded-pill" onclick="simulateScenario('critical')">
+                            ⚡ Live Wire Near School
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-light rounded-pill" onclick="simulateScenario('high')">
+                            💧 Water Pipeline Burst
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-light rounded-pill" onclick="simulateScenario('medium')">
+                            🕳️ Deep Road Pothole
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-light rounded-pill" onclick="simulateScenario('low')">
+                            🗑️ Garbage Bin Overflow
+                        </button>
+                    </div>
+
+                    <textarea id="demoInput" class="form-control bg-dark text-white border-secondary mb-3" rows="4"
+                              placeholder="Describe your civic issue (e.g., Live electric spark wire hanging dangerously on main road)..."
+                              oninput="analyzeText()"></textarea>
+                </div>
+
+                <!-- Simulation Output -->
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-3 border" style="background: rgba(15, 23, 42, 0.85); border-color: rgba(255,255,255,0.1) !important;">
+                        <h6 class="text-uppercase small fw-bold text-muted mb-3 d-flex justify-content-between">
+                            <span>Predicted AI Triage</span>
+                            <span id="scanStatus" class="text-success"><i class="bi bi-check2-circle me-1"></i>Active</span>
+                        </h6>
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <small class="text-white-50 d-block">Priority Tier</small>
+                                <span id="outPriority" class="priority-badge priority-critical d-inline-block mt-1">CRITICAL</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-white-50 d-block">Department</small>
+                                <span id="outDept" class="fw-bold text-white fs-6 d-inline-block mt-1">Electricity Board</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-white-50 d-block">Target SLA</small>
+                                <span id="outSla" class="fw-bold text-danger fs-6 d-inline-block mt-1">4 Hours Window</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-white-50 d-block">Model Confidence</small>
+                                <span id="outConf" class="fw-bold text-info fs-6 d-inline-block mt-1">96.8%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded bg-dark border border-secondary small text-white-50" id="outReasoning">
+                            Detected severe life-hazard keyword triggers ("live wire", "spark"). Auto-assigned statutory emergency priority.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cloud Architecture & Deployment Notice -->
+        <div class="glass-panel p-4 my-4">
+            <div class="row align-items-center g-4">
+                <div class="col-md-8">
+                    <h5 class="fw-bold mb-1"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Full Stack Deployment Architecture</h5>
+                    <p class="text-white-50 small mb-0">
+                        This web portal is hosted on Netlify as the static gateway. The dynamic Python FastAPI service and Spring Boot backend run as containerized microservices on Render / Cloud VPS with SQLite/Postgres persistence.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="https://github.com/Cy-prog/complaint-priority-system" target="_blank" class="btn btn-outline-info rounded-pill px-4">
+                        <i class="bi bi-book me-1"></i>Read Deployment Docs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 border-top text-muted small" style="border-color: rgba(255,255,255,0.08) !important;">
+        CivicPulse AI Complaint Priority &amp; SLA Tracking System &bull; Open Source Municipal Platform
+    </footer>
+
+    <script>
+        const scenarios = {
+            critical: {
+                text: "Live electric spark wire broken and hanging dangerously near school gate on Gandhi Road. High risk of electrocution!",
+                priority: "CRITICAL",
+                badgeClass: "priority-critical",
+                dept: "Electricity Board",
+                sla: "4 Hours Window",
+                conf: "97.4%",
+                reason: "Direct life-safety hazard detected. Escalated immediately to Emergency Response Team."
+            },
+            high: {
+                text: "Underground main drinking water pipe burst on 5th Avenue. Gallons of water gushing out causing severe flooding.",
+                priority: "HIGH",
+                badgeClass: "priority-high",
+                dept: "Water Works Department",
+                sla: "12 Hours Window",
+                conf: "94.2%",
+                reason: "Critical resource disruption and urban road flooding detected."
+            },
+            medium: {
+                text: "Deep 2-foot pothole on ring road after heavy monsoon rain. Vehicles skidding and traffic jam.",
+                priority: "MEDIUM",
+                badgeClass: "priority-medium",
+                dept: "Roads & Infrastructure",
+                sla: "48 Hours Window",
+                conf: "91.8%",
+                reason: "Infrastructure damage impacting public transit; assigned standard maintenance SLA."
+            },
+            low: {
+                text: "Community garbage bin in Sector 4 is full and stray animals scattering litter.",
+                priority: "LOW",
+                badgeClass: "priority-low",
+                dept: "Sanitation & Waste Management",
+                sla: "168 Hours Window",
+                conf: "89.5%",
+                reason: "Routine civic maintenance task with statutory 7-day resolution timeline."
+            }
+        };
+
+        function simulateScenario(key) {
+            const data = scenarios[key];
+            document.getElementById('demoInput').value = data.text;
+            applyData(data);
+        }
+
+        function analyzeText() {
+            const val = document.getElementById('demoInput').value.toLowerCase();
+            if (val.includes('wire') || val.includes('electric') || val.includes('spark') || val.includes('fire') || val.includes('shock')) {
+                applyData(scenarios.critical);
+            } else if (val.includes('water') || val.includes('leak') || val.includes('pipe') || val.includes('burst') || val.includes('flood')) {
+                applyData(scenarios.high);
+            } else if (val.includes('road') || val.includes('pothole') || val.includes('light') || val.includes('traffic')) {
+                applyData(scenarios.medium);
+            } else {
+                applyData(scenarios.low);
+            }
+        }
+
+        function applyData(data) {
+            const outP = document.getElementById('outPriority');
+            outP.textContent = data.priority;
+            outP.className = 'priority-badge d-inline-block mt-1 ' + data.badgeClass;
+            document.getElementById('outDept').textContent = data.dept;
+            document.getElementById('outSla').textContent = data.sla;
+            document.getElementById('outConf').textContent = data.conf;
+            document.getElementById('outReasoning').textContent = data.reason;
+        }
+
+        // Initialize default scenario
+        simulateScenario('critical');
+    </script>
+</body>
+</html>

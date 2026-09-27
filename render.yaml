@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: complaint-priority-system
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: "CivicPulse Complaint Priority System"
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///./data/complaints.db
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: SESSION_EXPIRY_HOURS
+        value: "24"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "120"
