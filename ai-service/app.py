@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import json
 import logging
 from pathlib import Path
 from flask import Flask, request, jsonify
@@ -21,7 +22,25 @@ app = Flask(__name__)
 CORS(app)
 
 API_KEY = os.getenv("AI_SERVICE_API_KEY", "complaint-ai-service-key-2024")
-MODEL_VERSION = "1.1.0"
+MODEL_VERSION = "1.2.0"
+
+# Optional Gemini client for enhanced reasoning
+gemini_client = None
+gemini_checked = False
+
+def get_gemini_client():
+    global gemini_client, gemini_checked
+    if not gemini_checked:
+        gemini_checked = True
+        gemini_key = os.getenv("GEMINI_API_KEY")
+        if gemini_key:
+            try:
+                from google import genai
+                gemini_client = genai.Client(api_key=gemini_key)
+                logger.info("Google GenAI client initialized for reasoning enhancement.")
+            except Exception as e:
+                logger.warning(f"Could not initialize Google GenAI client: {e}")
+    return gemini_client
 
 # Lazy-load pipeline
 pipeline = None
@@ -45,7 +64,7 @@ def verify_api_key():
 
 @app.before_request
 def authenticate():
-    if request.path in ["/ai/health", "/health"]:
+    if request.path in ["/ai/health", "/health", "/ai/quick-scan"]:
         return None
     if not verify_api_key():
         return jsonify({"error": "Unauthorized", "message": "Invalid or missing X-API-Key header"}), 401
@@ -53,11 +72,76 @@ def authenticate():
 @app.route("/ai/health", methods=["GET"])
 @app.route("/health", methods=["GET"])
 def health():
+    ai_pipe = get_ai_pipeline()
     return jsonify({
         "status": "UP",
         "service": "CivicPulse AI Service",
         "version": MODEL_VERSION,
+        "pipelineReady": ai_pipe is not None,
+        "geminiEnhanced": get_gemini_client() is not None,
         "timestamp": time.time()
+    }), 200
+
+@app.route("/ai/quick-scan", methods=["POST"])
+def quick_scan():
+    """Real-time lightweight inspection endpoint for citizen UI pre-fill."""
+    data = request.get_json(silent=True) or {}
+    text = (data.get("text") or "").strip()
+    if not text:
+        return jsonify({
+            "category": "General Grievance",
+            "priority": "LOW",
+            "priorityScore": 25,
+            "confidence": 0.50,
+            "keyIssues": ["Awaiting description input"]
+        }), 200
+
+    ai_pipe = get_ai_pipeline()
+    if ai_pipe:
+        try:
+            res = ai_pipe.analyze(text)
+            return jsonify({
+                "category": res.category or "General",
+                "subcategory": res.subcategory or "General",
+                "priority": res.priority or "MEDIUM",
+                "priorityScore": int(res.priority_score or 50),
+                "confidence": round(float(res.confidence or 0.85), 2),
+                "keyIssues": res.reasons[:3] if res.reasons else [],
+                "riskLevel": res.risk_level or "low"
+            }), 200
+        except Exception as ex:
+            logger.debug(f"Quick scan fallback: {ex}")
+
+    # Rule-based instant fallback
+    text_lower = text.lower()
+    cat = "General"
+    prio = "MEDIUM"
+    score = 50
+    if any(k in text_lower for k in ["wire", "current", "shock", "fire", "gas", "collapse", "manhole"]):
+        prio = "CRITICAL"
+        score = 90
+        cat = "Electricity" if "wire" in text_lower else "Public Works"
+    elif any(k in text_lower for k in ["water", "sewage", "drain", "pipe", "paani"]):
+        cat = "Water Department"
+        score = 65
+        prio = "HIGH"
+    elif any(k in text_lower for k in ["garbage", "trash", "waste", "kachra"]):
+        cat = "Sanitation Department"
+        score = 45
+        prio = "MEDIUM"
+    elif any(k in text_lower for k in ["road", "pothole", "street", "sadak"]):
+        cat = "Public Works"
+        score = 55
+        prio = "MEDIUM"
+
+    return jsonify({
+        "category": cat,
+        "subcategory": "General",
+        "priority": prio,
+        "priorityScore": score,
+        "confidence": 0.75,
+        "keyIssues": ["Preliminary heuristic match"],
+        "riskLevel": "high" if prio in ["CRITICAL", "HIGH"] else "low"
     }), 200
 
 @app.route("/ai/analyze", methods=["POST"])
@@ -126,6 +210,40 @@ def analyze_complaint():
                 elif isinstance(item, str):
                     flat_entities.append(item)
 
+        reasoning_summary = res.reasoning_summary or "AI analysis completed based on civic risk markers."
+        recommended_action = res.recommended_action or "Dispatch field inspection team."
+
+        # Optional Gemini enhancement when configured
+        client = get_gemini_client()
+        if client:
+            try:
+                g_prompt = (
+                    f"You are an expert civic intelligence AI. A citizen reported:\n"
+                    f"Topic: {topic}\n"
+                    f"Description: {description}\n"
+                    f"Location: {address}\n"
+                    f"AI Category: {res.category}, Assigned Priority: {res.priority} (Score: {res.priority_score}/100).\n"
+                    f"Signals: {', '.join(res.reasons) if res.reasons else 'General issue'}\n\n"
+                    f"Return a JSON object with:\n"
+                    f'{{"reasoning": "1-2 concise sentences explaining the priority assignment based on public safety/infrastructure impact", '
+                    f'"action": "1 concrete sentence recommending the immediate departmental step"}}'
+                )
+                g_resp = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=g_prompt
+                )
+                if g_resp and g_resp.text:
+                    import re as _re
+                    jm = _re.search(r'\{.*\}', g_resp.text, _re.DOTALL)
+                    if jm:
+                        parsed = json.loads(jm.group(0))
+                        if parsed.get("reasoning"):
+                            reasoning_summary = parsed["reasoning"].strip()
+                        if parsed.get("action"):
+                            recommended_action = parsed["action"].strip()
+            except Exception as g_ex:
+                logger.debug(f"Gemini generation skipped: {g_ex}")
+
         response_payload = {
             "category": res.category or "Other",
             "subcategory": res.subcategory or "",
@@ -142,7 +260,7 @@ def analyze_complaint():
             "vulnerabilityScore": int(res.vulnerability_score or 20),
             "sentiment": res.sentiment or "neutral",
             "sentimentConfidence": round(float(res.sentiment_confidence or 0.75), 4),
-            "summary": res.reasoning_summary or (description[:150] + "..."),
+            "summary": reasoning_summary if len(reasoning_summary) < 180 else (description[:150] + "..."),
             "entities": flat_entities,
             "entityConfidence": round(float(res.entity_confidence or 0.70), 4),
             "keyIssues": res.reasons if isinstance(res.reasons, list) else [],
@@ -155,8 +273,8 @@ def analyze_complaint():
             "provenance": res.provenance,
             "affectedPopulation": str(res.affected_population or "Local residents"),
             "affectedPopulationEstimate": int(res.affected_population_estimate or 10),
-            "reasoningSummary": res.reasoning_summary or "AI analysis completed based on civic risk markers.",
-            "recommendedAction": res.recommended_action or "Dispatch field inspection team.",
+            "reasoningSummary": reasoning_summary,
+            "recommendedAction": recommended_action,
             "confidence": round(float(res.confidence or 0.85) if (res.confidence or 0) <= 1.0 else (float(res.confidence) / 100.0), 4),
             "duplicateProbability": round(float(res.duplicate_probability or 0.0), 3),
             "similarComplaintIds": res.similar_complaint_ids,

@@ -2,46 +2,71 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head><title>Register</title></head>
+<head>
+    <title>Create Citizen Account - CivicPulse AI</title>
+</head>
 <body>
 <div layout:fragment="content">
     <div class="auth-container">
-        <div class="auth-card">
+        <div class="auth-card shadow-lg">
             <div class="auth-header">
-                <i class="bi bi-person-plus auth-icon"></i>
-                <h2>Create Account</h2>
-                <p class="text-muted">Register as a Citizen</p>
+                <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
+                    <i class="bi bi-person-plus display-6"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-1">Citizen Registration</h2>
+                <p class="text-muted small">Create an account to lodge and track civic grievances</p>
+            </div>
+
+            <!-- Error message if registration failed -->
+            <div th:if="${error}" class="alert alert-danger py-2 small d-flex align-items-center mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${error}">Registration failed.</span>
             </div>
 
             <form th:action="@{/register}" method="post" th:object="${user}">
                 <div class="mb-3">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" th:field="*{fullName}" class="form-control" placeholder="Your full name" required>
+                    <label class="form-label small fw-bold text-dark">Full Legal Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-muted"></i></span>
+                        <input type="text" th:field="*{fullName}" class="form-control border-start-0" placeholder="e.g. Ramesh Kumar" required autofocus>
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" th:field="*{username}" class="form-control" placeholder="Choose a username" required>
+                    <label class="form-label small fw-bold text-dark">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-at text-muted"></i></span>
+                        <input type="text" th:field="*{username}" class="form-control border-start-0" placeholder="Choose a username" required>
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" th:field="*{email}" class="form-control" placeholder="your@email.com" required>
+                    <label class="form-label small fw-bold text-dark">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                        <input type="email" th:field="*{email}" class="form-control border-start-0" placeholder="citizen@example.gov.in" required>
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Mobile</label>
-                    <input type="tel" th:field="*{mobile}" class="form-control" placeholder="9876543210">
+                    <label class="form-label small fw-bold text-dark">Mobile Contact</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-telephone text-muted"></i></span>
+                        <input type="tel" th:field="*{mobile}" class="form-control border-start-0" placeholder="10-digit mobile number">
+                    </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" th:field="*{password}" class="form-control" placeholder="Min 6 characters" required>
+                    <label class="form-label small fw-bold text-dark">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                        <input type="password" th:field="*{password}" class="form-control border-start-0" placeholder="Minimum 6 characters" required>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 btn-lg">
-                    <i class="bi bi-person-plus me-2"></i>Register
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm mt-3">
+                    <i class="bi bi-check-circle me-1"></i>Complete Registration
                 </button>
             </form>
 
-            <div class="text-center mt-3">
-                <span class="text-muted">Already have an account?</span>
-                <a th:href="@{/login}" class="ms-1">Sign In</a>
+            <div class="text-center mt-3 pt-3 border-top">
+                <span class="text-muted small">Already registered?</span>
+                <a th:href="@{/login}" class="ms-1 small fw-bold text-primary">Sign In here</a>
             </div>
         </div>
     </div>

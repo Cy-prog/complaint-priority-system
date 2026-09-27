@@ -2,75 +2,294 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head><title>File Complaint</title></head>
+<head>
+    <title>File a Complaint</title>
+</head>
 <body>
 <div layout:fragment="content">
 <div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card glass-card">
-                <div class="card-header">
-                    <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>File a Complaint</h4>
-                    <p class="text-muted mb-0 mt-1">Describe your civic issue in detail. Our AI system will analyze, categorize, and prioritize it.</p>
-                </div>
-                <div class="card-body">
-                    <form th:action="@{/citizen/submit}" method="post" th:object="${complaint}">
+        <div class="col-lg-9 col-xl-8">
 
+            <!-- Scenario Quick Fill Pills -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted fw-bold" style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                        <i class="bi bi-magic text-primary me-1"></i>Quick Demo Scenarios (1-Click Fill)
+                    </span>
+                    <small class="text-muted">Click to auto-populate test data</small>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="scenario-chip" onclick="fillScenario('electrical')">
+                        <span class="badge bg-danger rounded-pill">⚡ Critical</span>
+                        <span>Live Sparking Wire</span>
+                    </button>
+                    <button type="button" class="scenario-chip" onclick="fillScenario('water')">
+                        <span class="badge bg-primary rounded-pill">💧 High</span>
+                        <span>Burst Water Pipeline</span>
+                    </button>
+                    <button type="button" class="scenario-chip" onclick="fillScenario('road')">
+                        <span class="badge bg-warning text-dark rounded-pill">🕳️ Medium</span>
+                        <span>Deep Road Pothole</span>
+                    </button>
+                    <button type="button" class="scenario-chip" onclick="fillScenario('garbage')">
+                        <span class="badge bg-success rounded-pill">🗑️ Medium</span>
+                        <span>Overflowing Waste Dump</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Complaint Card -->
+            <div class="card glass-card border-0">
+                <div class="card-header bg-transparent pb-0 border-0 pt-4 px-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-4">
+                            <i class="bi bi-pencil-square fs-3"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-1">File a Civic Grievance</h4>
+                            <p class="text-muted mb-0" style="font-size: 0.92rem;">
+                                Our AI pipeline evaluates urgency, safety risk, and impacted population for prioritized resolution.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form th:action="@{/citizen/submit}" method="post" th:object="${complaint}" id="complaintForm">
+
+                        <!-- Citizen Contact Details -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">Your Name</label>
-                                <input type="text" th:field="*{citizenName}" class="form-control" placeholder="Full name">
+                                <label class="form-label fw-semibold" style="font-size: 0.88rem;">Your Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                                    <input type="text" th:field="*{citizenName}" class="form-control border-start-0" placeholder="e.g. Ramesh Chandra" id="citizenNameInput">
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Mobile Number</label>
-                                <input type="tel" th:field="*{mobile}" class="form-control" placeholder="9876543210">
+                                <label class="form-label fw-semibold" style="font-size: 0.88rem;">Contact Mobile Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone text-muted"></i></span>
+                                    <input type="tel" th:field="*{mobile}" class="form-control border-start-0" placeholder="e.g. 9876543210" id="mobileInput">
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Topic -->
                         <div class="mb-3">
-                            <label class="form-label">Topic / Subject <span class="text-muted">(optional)</span></label>
-                            <input type="text" th:field="*{topic}" class="form-control" placeholder="e.g., Broken water pipe on Main Road">
+                            <label class="form-label fw-semibold" style="font-size: 0.88rem;">Subject / Incident Topic <span class="text-muted fw-normal">(optional)</span></label>
+                            <input type="text" th:field="*{topic}" class="form-control" placeholder="e.g. Sparking high voltage wire hanging over road" id="topicInput">
                         </div>
 
+                        <!-- Description & Live AI Scanner -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">
-                                Complaint Description <span class="text-danger">*</span>
-                            </label>
-                            <textarea th:field="*{description}" class="form-control" rows="6"
-                                      placeholder="Describe the issue in detail. Include what happened, when, where, and how it affects you and your community..."
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold mb-0" style="font-size: 0.92rem;">
+                                    Grievance Details <span class="text-danger">*</span>
+                                </label>
+                                <small class="text-muted" id="charCounter">0 / 5000 chars</small>
+                            </div>
+                            <textarea th:field="*{description}" class="form-control" rows="5" id="descriptionInput"
+                                      placeholder="Describe what occurred, exact location, ongoing duration, hazards (fire, live wire, water outage), and affected people..."
                                       required minlength="10" maxlength="5000"></textarea>
-                            <div class="form-text">
-                                <i class="bi bi-cpu me-1"></i>
-                                Our AI will automatically detect: Category, Priority, Sentiment, Key Entities, and Risk Level
+
+                            <!-- Interactive Live AI Scanner Card -->
+                            <div class="scanner-card mt-3" id="aiScanPreview">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="pulse-dot success"></span>
+                                        <span class="fw-bold" style="font-size: 0.82rem; color: #6b21a8;">
+                                            <i class="bi bi-cpu-fill me-1"></i>Live AI Grievance Scanner
+                                        </span>
+                                    </div>
+                                    <span class="badge bg-white text-muted border px-2 py-1" id="scanStatus" style="font-size: 0.72rem;">Type to inspect</span>
+                                </div>
+
+                                <div class="row g-2 align-items-center" id="scanResultRow">
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Estimated Category</small>
+                                        <span class="fw-bold text-dark" id="previewCategory" style="font-size: 0.9rem;">General</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Priority Estimate</small>
+                                        <span class="priority-badge priority-medium" id="previewPriority">MEDIUM</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Detected Signals</small>
+                                        <small class="text-dark fw-semibold" id="previewSignals">Awaiting details</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Location & GPS Assist -->
                         <div class="mb-3">
-                            <label class="form-label">Location / Address</label>
-                            <input type="text" th:field="*{address}" class="form-control"
-                                   placeholder="Street, Area, Ward, City">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-semibold mb-0" style="font-size: 0.88rem;">Location / Street Address</label>
+                                <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 rounded-pill" onclick="detectLocation()" style="font-size: 0.78rem;">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>Use My GPS
+                                </button>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-pin-map text-muted"></i></span>
+                                <input type="text" th:field="*{address}" class="form-control border-start-0"
+                                       placeholder="e.g. Near City Center Mall, Main Road, Ward 12" id="addressInput">
+                            </div>
                         </div>
 
+                        <!-- Coordinates -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label">Latitude <span class="text-muted">(optional)</span></label>
-                                <input type="number" step="any" th:field="*{latitude}" class="form-control" placeholder="e.g., 23.2599">
+                                <label class="form-label text-muted" style="font-size: 0.82rem;">Latitude <small>(auto-filled via GPS)</small></label>
+                                <input type="number" step="any" th:field="*{latitude}" class="form-control" placeholder="26.2183" id="latInput">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Longitude <span class="text-muted">(optional)</span></label>
-                                <input type="number" step="any" th:field="*{longitude}" class="form-control" placeholder="e.g., 77.4126">
+                                <label class="form-label text-muted" style="font-size: 0.82rem;">Longitude <small>(auto-filled via GPS)</small></label>
+                                <input type="number" step="any" th:field="*{longitude}" class="form-control" placeholder="78.1828" id="lngInput">
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-accent btn-lg w-100">
-                            <i class="bi bi-send me-2"></i>Submit Complaint
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-accent btn-lg w-100 py-3 shadow-sm" id="submitBtn">
+                            <i class="bi bi-send-fill me-2"></i>Submit Grievance for AI Priority Triage
                         </button>
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
+</div>
+
+<div layout:fragment="scripts">
+<script>
+// Scenario preset data
+const scenarios = {
+    electrical: {
+        citizenName: "Sunil Sharma",
+        mobile: "9826123456",
+        topic: "Exposed High-Voltage Wire Sparking Near School",
+        description: "A live high-voltage electric wire snapped and is sparking directly on the road outside St. Mary School gate. School children and pedestrians are walking right beside it. Water is pooling around the wire due to rain. Severe electrocution danger!",
+        address: "Opposite St. Mary School, Kampoo Main Road, Ward 14",
+        latitude: 26.2084,
+        longitude: 78.1672
+    },
+    water: {
+        citizenName: "Meena Patel",
+        mobile: "9425123890",
+        topic: "Drinking Water Pipeline Burst & Sewage Contamination",
+        description: "Main underground drinking water supply pipe has burst and contaminated sewage water is mixing with municipal drinking line for 48 hours. More than 200 households in our lane have no potable water. Elderly residents falling sick.",
+        address: "Lane 4, Thatipur Colony, Ward 22",
+        latitude: 26.2235,
+        longitude: 78.1945
+    },
+    road: {
+        citizenName: "Anil Verma",
+        mobile: "9893456789",
+        topic: "Dangerous Deep Pothole on Highway Underpass",
+        description: "Large 2-foot deep crater pothole formed near the railway underpass. Multiple two-wheeler riders skidded and injured their knees yesterday night. Traffic is completely jammed during peak hours.",
+        address: "Railway Underpass, Hazira Chowk, Ward 8",
+        latitude: 26.2391,
+        longitude: 78.1729
+    },
+    garbage: {
+        citizenName: "Deepak Gupta",
+        mobile: "9755123412",
+        topic: "Overflowing Garbage Dump Near Public Park",
+        description: "Municipal waste collection bin has not been cleared for over 5 days. Foul smell is spreading across the neighborhood and stray animals are scattering garbage on the main street.",
+        address: "Corner of Pinto Park, Morar, Ward 31",
+        latitude: 26.2289,
+        longitude: 78.2155
+    }
+};
+
+function fillScenario(type) {
+    const s = scenarios[type];
+    if (!s) return;
+    document.getElementById('citizenNameInput').value = s.citizenName;
+    document.getElementById('mobileInput').value = s.mobile;
+    document.getElementById('topicInput').value = s.topic;
+    document.getElementById('descriptionInput').value = s.description;
+    document.getElementById('addressInput').value = s.address;
+    document.getElementById('latInput').value = s.latitude;
+    document.getElementById('lngInput').value = s.longitude;
+    triggerScan(s.description);
+}
+
+// Live debounced AI scan
+let scanTimeout = null;
+const descInput = document.getElementById('descriptionInput');
+const charCounter = document.getElementById('charCounter');
+
+descInput.addEventListener('input', function() {
+    charCounter.textContent = this.value.length + " / 5000 chars";
+    clearTimeout(scanTimeout);
+    scanTimeout = setTimeout(() => {
+        triggerScan(descInput.value);
+    }, 350);
+});
+
+function triggerScan(text) {
+    if (!text || text.trim().length < 8) {
+        document.getElementById('scanStatus').textContent = "Type to inspect";
+        document.getElementById('previewCategory').textContent = "General";
+        const prioBadge = document.getElementById('previewPriority');
+        prioBadge.className = "priority-badge priority-medium";
+        prioBadge.textContent = "MEDIUM";
+        document.getElementById('previewSignals').textContent = "Awaiting details";
+        return;
+    }
+
+    document.getElementById('scanStatus').textContent = "Scanning...";
+
+    fetch('/api/ai/quick-scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('scanStatus').textContent = "AI Match " + Math.round((data.confidence || 0.8) * 100) + "%";
+        document.getElementById('previewCategory').textContent = data.category || "General";
+        
+        const prio = (data.priority || "MEDIUM").toUpperCase();
+        const prioBadge = document.getElementById('previewPriority');
+        prioBadge.className = "priority-badge priority-" + prio.toLowerCase();
+        prioBadge.textContent = prio + " (" + (data.priorityScore || 50) + "/100)";
+        
+        if (data.keyIssues && data.keyIssues.length > 0) {
+            document.getElementById('previewSignals').textContent = data.keyIssues.slice(0, 2).join('; ');
+        } else {
+            document.getElementById('previewSignals').textContent = "Standard civic intake";
+        }
+    })
+    .catch(() => {
+        document.getElementById('scanStatus').textContent = "Heuristic check";
+    });
+}
+
+function detectLocation() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                document.getElementById('latInput').value = pos.coords.latitude.toFixed(6);
+                document.getElementById('lngInput').value = pos.coords.longitude.toFixed(6);
+                if (!document.getElementById('addressInput').value) {
+                    document.getElementById('addressInput').value = "GPS Location: " + pos.coords.latitude.toFixed(4) + ", " + pos.coords.longitude.toFixed(4);
+                }
+            },
+            err => {
+                alert("Could not access GPS location. Please enter your street address manually.");
+            },
+            { timeout: 7000 }
+        );
+    } else {
+        alert("Geolocation is not supported by your browser.");
+    }
+}
+</script>
 </div>
 </body>
 </html>

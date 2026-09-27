@@ -211,7 +211,7 @@ public class ComplaintService {
                 .newStatus(ComplaintStatus.CLASSIFIED)
                 .changedBy("AI System")
                 .note("AI analysis completed: " + priority + " priority, " +
-                      String.format("%.0f%%", (aiResult.getConfidence() != null ? aiResult.getConfidence() * 100 : 0)) + " confidence")
+                      String.format("%.0f%%", normalizedConf * 100) + " confidence")
                 .build());
 
         // Audit
@@ -220,7 +220,7 @@ public class ComplaintService {
                 .entityType("complaint")
                 .entityId(complaint.getId())
                 .newValue("Priority=" + priority + ", Category=" + aiResult.getCategory() +
-                         ", Confidence=" + aiResult.getConfidence())
+                         ", Confidence=" + String.format("%.2f", normalizedConf))
                 .build());
 
         // Notification for citizen
@@ -248,12 +248,8 @@ public class ComplaintService {
         };
 
         // Check configurable SLA rules
-        slaRuleRepo.findByPriority(priority).ifPresent(rule -> {
-            // Use configured value (done below in the record creation)
-        });
-
         SLARule rule = slaRuleRepo.findByPriority(priority).orElse(null);
-        if (rule != null) {
+        if (rule != null && rule.getResolutionHours() != null) {
             resolutionHours = rule.getResolutionHours();
         }
 
@@ -288,8 +284,12 @@ public class ComplaintService {
         return complaintRepo.searchComplaints(query, pageable);
     }
 
-    public List<Complaint> getBycitizenId(Long citizenId) {
+    public List<Complaint> getByCitizenId(Long citizenId) {
         return complaintRepo.findByCitizenIdOrderByCreatedAtDesc(citizenId);
+    }
+
+    public List<Complaint> getBycitizenId(Long citizenId) {
+        return getByCitizenId(citizenId);
     }
 
     public Page<Complaint> getByStatus(ComplaintStatus status, Pageable pageable) {

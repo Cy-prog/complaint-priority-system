@@ -53,10 +53,17 @@ public class AdminController {
         this.notificationRepo = notificationRepo;
     }
 
+    private String getUsername(Authentication auth) {
+        return (auth != null && auth.getName() != null) ? auth.getName() : "admin";
+    }
+
+    private User getUser(Authentication auth) {
+        return userRepo.findByUsername(getUsername(auth)).orElse(null);
+    }
+
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
-        String username = (auth != null && auth.getName() != null) ? auth.getName() : "admin";
-        User user = userRepo.findByUsername(username).orElse(null);
+        User user = getUser(auth);
         DashboardDTO summary = analyticsService.getDashboardSummary();
         List<Complaint> recent = complaintService.getRecent();
         List<Complaint> criticalAlerts = complaintRepo.findByPriorityAndStatusNotIn(
@@ -83,16 +90,24 @@ public class AdminController {
                             @RequestParam(required = false) String status,
                             @RequestParam(required = false) String priority,
                             Authentication auth, Model model) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
+        User user = getUser(auth);
         PageRequest pageable = PageRequest.of(page, 20, Sort.by("createdAt").descending());
 
         Page<Complaint> complaints;
         if (!search.isBlank()) {
-            complaints = complaintService.search(search, pageable);
+            complaints = complaintService.search(search.trim(), pageable);
         } else if (status != null && !status.isBlank()) {
-            complaints = complaintService.getByStatus(ComplaintStatus.valueOf(status), pageable);
+            try {
+                complaints = complaintService.getByStatus(ComplaintStatus.valueOf(status.trim().toUpperCase()), pageable);
+            } catch (IllegalArgumentException e) {
+                complaints = complaintService.listAll(pageable);
+            }
         } else if (priority != null && !priority.isBlank()) {
-            complaints = complaintService.getByPriority(Priority.valueOf(priority), pageable);
+            try {
+                complaints = complaintService.getByPriority(Priority.valueOf(priority.trim().toUpperCase()), pageable);
+            } catch (IllegalArgumentException e) {
+                complaints = complaintService.listAll(pageable);
+            }
         } else {
             complaints = complaintService.listAll(pageable);
         }
@@ -218,7 +233,7 @@ public class AdminController {
 
     @GetMapping("/analytics")
     public String analytics(Authentication auth, Model model) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
+        User user = getUser(auth);
         model.addAttribute("user", user);
         model.addAttribute("summary", analyticsService.getDashboardSummary());
         model.addAttribute("categoryDistribution", analyticsService.getCategoryDistribution());
@@ -230,7 +245,7 @@ public class AdminController {
 
     @GetMapping("/ai")
     public String aiDashboard(Authentication auth, Model model) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
+        User user = getUser(auth);
         model.addAttribute("user", user);
         model.addAttribute("modelStatus", aiService.getModelStatus());
         model.addAttribute("modelMetrics", aiService.getModelMetrics());
@@ -252,7 +267,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public String users(Authentication auth, Model model) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
+        User user = getUser(auth);
         model.addAttribute("user", user);
         model.addAttribute("users", userRepo.findAll());
         return "admin/users";
@@ -261,7 +276,7 @@ public class AdminController {
     @GetMapping("/audit")
     public String auditLogs(@RequestParam(defaultValue = "0") int page,
                            Authentication auth, Model model) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
+        User user = getUser(auth);
         model.addAttribute("user", user);
         model.addAttribute("logs", auditRepo.findAllByOrderByCreatedAtDesc(
             PageRequest.of(page, 50)));

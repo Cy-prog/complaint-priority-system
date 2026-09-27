@@ -65,13 +65,15 @@ public class AuthController {
 
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth) {
-        // Route to appropriate dashboard based on role
-        String role = auth.getAuthorities().iterator().next().getAuthority();
-        return switch (role) {
-            case "ROLE_ADMIN" -> "redirect:/admin/dashboard";
-            case "ROLE_HIGHER_AUTHORITY" -> "redirect:/authority/dashboard";
-            case "ROLE_CITIZEN" -> "redirect:/citizen/home";
-            default -> "redirect:/citizen/home";
-        };
+        if (auth == null || auth.getAuthorities() == null || auth.getAuthorities().isEmpty()) {
+            return "redirect:/login";
+        }
+        for (var ga : auth.getAuthorities()) {
+            String role = ga.getAuthority();
+            if ("ROLE_ADMIN".equals(role)) return "redirect:/admin/dashboard";
+            if ("ROLE_HIGHER_AUTHORITY".equals(role)) return "redirect:/authority/dashboard";
+            if ("ROLE_CITIZEN".equals(role)) return "redirect:/citizen/home";
+        }
+        return "redirect:/citizen/home";
     }
 }

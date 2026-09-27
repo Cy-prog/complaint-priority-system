@@ -3,77 +3,86 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
 <head>
-    <title>Login</title>
+    <title>Sign In - CivicPulse AI</title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="auth-container">
-        <div class="auth-card">
+        <div class="auth-card shadow-lg">
             <div class="auth-header">
-                <i class="bi bi-shield-check auth-icon"></i>
-                <h2>CivicPulse</h2>
-                <p class="text-muted">AI-Assisted Complaint Intelligence Platform</p>
+                <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
+                    <i class="bi bi-shield-lock display-6"></i>
+                </div>
+                <h2 class="fw-bold font-monospace text-primary mb-1">CivicPulse</h2>
+                <p class="text-muted small">AI-Assisted Municipal Grievance Intelligence</p>
             </div>
 
-            <div th:if="${error}" class="alert alert-danger py-2">
-                <i class="bi bi-exclamation-triangle me-1"></i>
-                <span th:text="${error}">Error</span>
+            <!-- Error and Feedback Alerts -->
+            <div th:if="${error}" class="alert alert-danger py-2 small d-flex align-items-center mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${error}">Authentication error.</span>
             </div>
-            <div th:if="${message}" class="alert alert-success py-2">
-                <i class="bi bi-check-circle me-1"></i>
-                <span th:text="${message}">Message</span>
+            <div th:if="${message}" class="alert alert-success py-2 small d-flex align-items-center mb-3">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${message}">Message.</span>
             </div>
-            <div th:if="${param.error}" class="alert alert-danger py-2">
-                <i class="bi bi-exclamation-triangle me-1"></i> Invalid username or password
+            <div th:if="${param.error}" class="alert alert-danger py-2 small d-flex align-items-center mb-3">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                <span>Invalid credentials. Please verify your username and password.</span>
             </div>
-            <div th:if="${param.logout}" class="alert alert-info py-2">
-                <i class="bi bi-box-arrow-right me-1"></i> You have been logged out
+            <div th:if="${param.logout}" class="alert alert-info py-2 small d-flex align-items-center mb-3">
+                <i class="bi bi-box-arrow-right me-2"></i>
+                <span>You have successfully signed out.</span>
             </div>
 
+            <!-- Login Form -->
             <form th:action="@{/login}" method="post">
                 <div class="mb-3">
-                    <label class="form-label">Username</label>
+                    <label class="form-label small fw-bold text-dark">Username</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-person text-muted"></i></span>
+                        <input type="text" name="username" class="form-control border-start-0" placeholder="Enter your username" required autofocus>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Password</label>
+                    <label class="form-label small fw-bold text-dark">Password</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                        <input type="password" name="password" class="form-control border-start-0" placeholder="Enter your password" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 btn-lg">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm mt-2">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to Portal
                 </button>
             </form>
 
             <div class="text-center mt-3">
-                <span class="text-muted">Don't have an account?</span>
-                <a th:href="@{/register}" class="ms-1">Register as Citizen</a>
+                <span class="text-muted small">New to CivicPulse?</span>
+                <a th:href="@{/register}" class="ms-1 small fw-bold text-primary">Register as Citizen</a>
             </div>
 
-            <div class="demo-credentials mt-4">
-                <p class="text-muted mb-2"><small><i class="bi bi-info-circle me-1"></i>Demo Accounts:</small></p>
+            <!-- 1-Click Demo Accounts -->
+            <div class="demo-credentials mt-4 pt-3 border-top">
+                <p class="text-muted mb-2 text-center small fw-semibold">
+                    <i class="bi bi-magic me-1 text-primary"></i>One-Click Demo Personas:
+                </p>
                 <div class="row g-2">
                     <div class="col-4">
-                        <div class="demo-card" onclick="fillCredentials('admin','admin123')">
-                            <i class="bi bi-person-gear"></i>
-                            <small>Admin</small>
+                        <div class="demo-card" onclick="fillCredentials('admin','admin123')" title="Municipal Admin">
+                            <i class="bi bi-person-gear text-primary"></i>
+                            <small class="fw-bold d-block">Admin</small>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="demo-card" onclick="fillCredentials('authority','authority123')">
-                            <i class="bi bi-building"></i>
-                            <small>Authority</small>
+                        <div class="demo-card" onclick="fillCredentials('authority','authority123')" title="Executive Oversight">
+                            <i class="bi bi-building text-success"></i>
+                            <small class="fw-bold d-block">Authority</small>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="demo-card" onclick="fillCredentials('citizen','citizen123')">
-                            <i class="bi bi-people"></i>
-                            <small>Citizen</small>
+                        <div class="demo-card" onclick="fillCredentials('citizen','citizen123')" title="Civic Citizen">
+                            <i class="bi bi-people text-info"></i>
+                            <small class="fw-bold d-block">Citizen</small>
                         </div>
                     </div>
                 </div>
@@ -85,8 +94,14 @@
 <div layout:fragment="scripts">
 <script>
 function fillCredentials(username, password) {
-    document.querySelector('input[name="username"]').value = username;
-    document.querySelector('input[name="password"]').value = password;
+    const userIn = document.querySelector('input[name="username"]');
+    const passIn = document.querySelector('input[name="password"]');
+    if (userIn && passIn) {
+        userIn.value = username;
+        passIn.value = password;
+        userIn.classList.add('border-primary');
+        passIn.classList.add('border-primary');
+    }
 }
 </script>
 </div>

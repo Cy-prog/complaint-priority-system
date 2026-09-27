@@ -2,47 +2,64 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base}">
-<head><title>Admin Dashboard</title></head>
+<head>
+    <title>Command Center - CivicPulse AI</title>
+</head>
 <body>
 <div layout:fragment="content">
 <div class="container-fluid py-4 px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0"><i class="bi bi-grid-1x2-fill me-2"></i>Command Center</h3>
-        <span class="text-muted" th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy, HH:mm')}">Now</span>
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-grid-1x2-fill text-primary me-2"></i>Civic Command Center</h3>
+            <p class="text-muted mb-0">Real-time civic operations, automated SLA tracking & ML priority triage</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-white text-dark border px-3 py-2 shadow-sm font-monospace">
+                <i class="bi bi-clock-history me-1 text-primary"></i>
+                <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy, HH:mm')}">Timestamp</span>
+            </span>
+            <a th:href="@{/admin/ai}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-cpu me-1"></i>AI Engine
+            </a>
+        </div>
     </div>
 
-    <!-- KPI Cards Row -->
+    <!-- Primary KPI Cards Row -->
     <div class="row g-3 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="kpi-card kpi-total">
                 <div class="kpi-icon"><i class="bi bi-inbox-fill"></i></div>
                 <div class="kpi-content">
                     <span class="kpi-value" th:text="${summary.totalComplaints}">0</span>
-                    <span class="kpi-label">Total Complaints</span>
+                    <span class="kpi-label">Total Grievances</span>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="kpi-card kpi-critical">
+            <div class="kpi-card kpi-critical" th:classappend="${summary.criticalCount > 0 ? 'border-danger' : ''}">
                 <div class="kpi-icon"><i class="bi bi-exclamation-octagon-fill"></i></div>
                 <div class="kpi-content">
-                    <span class="kpi-value" th:text="${summary.criticalCount}">0</span>
-                    <span class="kpi-label">Critical</span>
+                    <div class="d-flex align-items-baseline gap-2">
+                        <span class="kpi-value" th:text="${summary.criticalCount}">0</span>
+                        <span th:if="${summary.criticalCount > 0}" class="radar-dot" title="Active Emergencies"></span>
+                    </div>
+                    <span class="kpi-label">Critical Emergencies</span>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="kpi-card kpi-open">
-                <div class="kpi-icon"><i class="bi bi-folder2-open"></i></div>
+                <div class="kpi-icon"><i class="bi bi-hourglass-split"></i></div>
                 <div class="kpi-content">
                     <span class="kpi-value" th:text="${summary.openComplaints}">0</span>
-                    <span class="kpi-label">Open</span>
+                    <span class="kpi-label">Pending Resolution</span>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="kpi-card kpi-resolved">
-                <div class="kpi-icon"><i class="bi bi-check-circle-fill"></i></div>
+                <div class="kpi-icon"><i class="bi bi-check2-circle"></i></div>
                 <div class="kpi-content">
                     <span class="kpi-value" th:text="${summary.resolvedToday}">0</span>
                     <span class="kpi-label">Resolved Today</span>
@@ -51,73 +68,119 @@
         </div>
     </div>
 
-    <!-- Secondary KPIs -->
+    <!-- Secondary Operational KPIs -->
     <div class="row g-3 mb-4">
-        <div class="col-xl-2 col-md-4">
-            <div class="mini-kpi"><span class="mini-kpi-val" th:text="${summary.highCount}">0</span><span class="mini-kpi-label">High</span></div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-kpi">
+                <span class="mini-kpi-val text-warning" th:text="${summary.highCount}">0</span>
+                <span class="mini-kpi-label">High Priority</span>
+            </div>
         </div>
-        <div class="col-xl-2 col-md-4">
-            <div class="mini-kpi"><span class="mini-kpi-val" th:text="${summary.mediumCount}">0</span><span class="mini-kpi-label">Medium</span></div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-kpi">
+                <span class="mini-kpi-val text-info" th:text="${summary.mediumCount}">0</span>
+                <span class="mini-kpi-label">Medium Priority</span>
+            </div>
         </div>
-        <div class="col-xl-2 col-md-4">
-            <div class="mini-kpi"><span class="mini-kpi-val" th:text="${summary.lowCount}">0</span><span class="mini-kpi-label">Low</span></div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-kpi">
+                <span class="mini-kpi-val text-success" th:text="${summary.lowCount}">0</span>
+                <span class="mini-kpi-label">Low Priority</span>
+            </div>
         </div>
-        <div class="col-xl-2 col-md-4">
-            <div class="mini-kpi warning"><span class="mini-kpi-val" th:text="${summary.slaBreached}">0</span><span class="mini-kpi-label">SLA Breached</span></div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-kpi warning">
+                <span class="mini-kpi-val text-danger" th:text="${summary.slaBreached}">0</span>
+                <span class="mini-kpi-label">SLA Breached</span>
+            </div>
         </div>
-        <div class="col-xl-2 col-md-4">
-            <div class="mini-kpi"><span class="mini-kpi-val" th:text="${summary.avgConfidence + '%'}">0%</span><span class="mini-kpi-label">AI Confidence</span></div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-kpi">
+                <span class="mini-kpi-val" style="color: #6366f1;" th:text="${summary.avgConfidence + '%'}">0%</span>
+                <span class="mini-kpi-label">AI Confidence</span>
+            </div>
         </div>
-        <div class="col-xl-2 col-md-4">
-            <div class="mini-kpi"><span class="mini-kpi-val" th:text="${summary.slaComplianceRate + '%'}">0%</span><span class="mini-kpi-label">SLA Compliance</span></div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-kpi">
+                <span class="mini-kpi-val text-success" th:text="${summary.slaComplianceRate + '%'}">0%</span>
+                <span class="mini-kpi-label">SLA Compliance</span>
+            </div>
         </div>
     </div>
 
-    <!-- Charts Row -->
+    <!-- Charts Row 1: Trend & Priority Distribution -->
     <div class="row g-3 mb-4">
         <div class="col-lg-8">
-            <div class="card glass-card h-100">
-                <div class="card-header"><h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Complaints Trend (30 Days)</h6></div>
-                <div class="card-body"><canvas id="trendChart" height="280"></canvas></div>
+            <div class="card glass-card h-100 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-graph-up text-primary me-2"></i>Complaints Volume Trend (30 Days)</h6>
+                    <span class="badge bg-light text-dark border">Daily Influx</span>
+                </div>
+                <div class="card-body">
+                    <div style="height: 280px; position: relative;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="card glass-card h-100">
-                <div class="card-header"><h6 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Priority Distribution</h6></div>
-                <div class="card-body"><canvas id="priorityChart" height="280"></canvas></div>
+            <div class="card glass-card h-100 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-pie-chart text-primary me-2"></i>Priority Distribution</h6>
+                    <span class="badge bg-light text-dark border">Active Tiers</span>
+                </div>
+                <div class="card-body">
+                    <div style="height: 280px; position: relative;">
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Charts Row 2: Category Breakdown & Critical Alerts -->
     <div class="row g-3 mb-4">
         <div class="col-lg-6">
-            <div class="card glass-card h-100">
-                <div class="card-header"><h6 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Category Distribution</h6></div>
-                <div class="card-body"><canvas id="categoryChart" height="300"></canvas></div>
+            <div class="card glass-card h-100 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-bar-chart-steps text-primary me-2"></i>Complaints by Category</h6>
+                    <span class="badge bg-light text-dark border">Departmental Spread</span>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
-            <!-- Critical Alerts -->
-            <div class="card glass-card h-100 border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h6 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Critical Alerts
-                        <span class="badge bg-white text-danger ms-2" th:text="${criticalAlerts.size()}">0</span>
+            <!-- Critical Alerts Panel -->
+            <div class="card glass-card h-100 shadow-sm border-danger">
+                <div class="card-header bg-danger text-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Emergency Triage Queue
                     </h6>
+                    <span class="badge bg-white text-danger fw-bold px-2 py-1" th:text="${criticalAlerts.size()} + ' Critical'">0 Critical</span>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush" th:if="${!criticalAlerts.isEmpty()}">
                         <a th:each="c : ${criticalAlerts}" th:href="@{/admin/complaint/{id}(id=${c.ticketId})}"
-                           class="list-group-item list-group-item-action py-2">
-                            <div class="d-flex justify-content-between">
-                                <span class="fw-bold" th:text="${c.ticketId}">GWA</span>
-                                <span class="status-badge" th:classappend="'status-' + ${c.status.name().toLowerCase()}" th:text="${c.status}">S</span>
+                           class="list-group-item list-group-item-action py-3 px-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold font-monospace text-danger" th:text="${c.ticketId}">GWA-1001</span>
+                                <span class="status-badge" th:classappend="'status-' + ${c.status.name().toLowerCase()}" th:text="${c.status}">STATUS</span>
                             </div>
-                            <small class="text-truncate d-block" th:text="${c.description}">Desc</small>
+                            <p class="mb-1 text-dark fw-semibold small text-truncate" th:text="${c.topic ?: c.description}">Topic</p>
+                            <div class="d-flex justify-content-between align-items-center text-muted small">
+                                <span><i class="bi bi-tag me-1"></i><span th:text="${c.category ?: 'Emergency'}">Category</span></span>
+                                <span><i class="bi bi-clock me-1"></i><span th:text="${#temporals.format(c.createdAt, 'dd MMM HH:mm')}">Date</span></span>
+                            </div>
                         </a>
                     </div>
-                    <div th:if="${criticalAlerts.isEmpty()}" class="p-4 text-center text-muted">
-                        <i class="bi bi-check-circle display-6"></i>
-                        <p class="mt-2">No critical complaints</p>
+                    <div th:if="${criticalAlerts.isEmpty()}" class="p-5 text-center text-muted">
+                        <i class="bi bi-check2-all display-4 text-success d-block mb-2"></i>
+                        <h6 class="fw-bold text-dark">No Active Critical Emergencies</h6>
+                        <small>All high-risk incidents have been mitigated or assigned.</small>
                     </div>
                 </div>
             </div>
@@ -125,24 +188,50 @@
     </div>
 
     <!-- Recent Complaints Table -->
-    <div class="card glass-card">
-        <div class="card-header d-flex justify-content-between">
-            <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Complaints</h6>
-            <a th:href="@{/admin/complaints}" class="btn btn-sm btn-outline-primary">View All</a>
+    <div class="card glass-card shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history text-primary me-2"></i>Recent Grievance Influx</h6>
+            <a th:href="@{/admin/complaints}" class="btn btn-sm btn-outline-primary fw-bold">
+                View All Complaints <i class="bi bi-arrow-right ms-1"></i>
+            </a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead><tr><th>Ticket</th><th>Description</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th><th></th></tr></thead>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ticket</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Filed On</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr th:each="c : ${recentComplaints}">
-                            <td><a th:href="@{/admin/complaint/{id}(id=${c.ticketId})}" class="ticket-link" th:text="${c.ticketId}">T</a></td>
-                            <td class="text-truncate" style="max-width:300px" th:text="${c.description}">D</td>
-                            <td><span class="badge bg-info" th:text="${c.category ?: 'Pending'}">C</span></td>
-                            <td><span th:if="${c.priority}" class="priority-badge" th:classappend="'priority-' + ${c.priority.name().toLowerCase()}" th:text="${c.priority}">P</span></td>
+                            <td>
+                                <a th:href="@{/admin/complaint/{id}(id=${c.ticketId})}" class="ticket-link fw-bold font-monospace" th:text="${c.ticketId}">GWA-1234</a>
+                            </td>
+                            <td style="max-width:320px;">
+                                <div class="fw-semibold text-truncate text-dark" th:if="${c.topic}" th:text="${c.topic}">Topic</div>
+                                <small class="text-muted text-truncate d-block" th:text="${c.description}">Description</small>
+                            </td>
+                            <td><span class="badge bg-info text-dark" th:text="${c.category ?: 'Pending'}">Cat</span></td>
+                            <td>
+                                <span th:if="${c.priority}" class="priority-badge"
+                                      th:classappend="'priority-' + ${c.priority.name().toLowerCase()}"
+                                      th:text="${c.priority}">P</span>
+                                <span th:unless="${c.priority}" class="badge bg-secondary">Pending</span>
+                            </td>
                             <td><span class="status-badge" th:classappend="'status-' + ${c.status.name().toLowerCase()}" th:text="${c.status}">S</span></td>
-                            <td th:text="${#temporals.format(c.createdAt, 'dd MMM HH:mm')}">D</td>
-                            <td><a th:href="@{/admin/complaint/{id}(id=${c.ticketId})}" class="btn btn-sm btn-outline-primary">Manage</a></td>
+                            <td class="text-muted small" th:text="${#temporals.format(c.createdAt, 'dd MMM HH:mm')}">Date</td>
+                            <td class="text-end">
+                                <a th:href="@{/admin/complaint/{id}(id=${c.ticketId})}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-gear"></i> Manage
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -158,34 +247,66 @@
     const priorityData = /*[[${priorityDistribution}]]*/ [];
     const categoryData = /*[[${categoryDistribution}]]*/ [];
 
-    // Trend Chart
+    // Trend Chart with Smooth Curved Fill
     if (document.getElementById('trendChart')) {
-        new Chart(document.getElementById('trendChart'), {
+        const trendCanvas = document.getElementById('trendChart');
+        const ctx = trendCanvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.01)');
+
+        new Chart(trendCanvas, {
             type: 'line',
             data: {
                 labels: trendData.map(d => d.date),
                 datasets: [{
-                    label: 'Complaints',
+                    label: 'Grievances',
                     data: trendData.map(d => d.count),
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99,102,241,0.1)',
+                    borderColor: '#4f46e5',
+                    borderWidth: 2.5,
+                    backgroundColor: gradient,
                     fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    tension: 0.35,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#4f46e5'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { family: 'Outfit', size: 13 },
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 12 },
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { stepSize: 1, font: { size: 11 } }
+                    }
+                }
             }
         });
     }
 
-    // Priority Chart
-    const priorityColors = { CRITICAL: '#dc2626', HIGH: '#f59e0b', MEDIUM: '#3b82f6', LOW: '#22c55e' };
+    // Priority Doughnut Chart
+    const priorityColors = {
+        CRITICAL: '#ef4444',
+        HIGH: '#f59e0b',
+        MEDIUM: '#3b82f6',
+        LOW: '#10b981'
+    };
     if (document.getElementById('priorityChart')) {
         new Chart(document.getElementById('priorityChart'), {
             type: 'doughnut',
@@ -193,14 +314,30 @@
                 labels: priorityData.map(d => d.priority),
                 datasets: [{
                     data: priorityData.map(d => d.count),
-                    backgroundColor: priorityData.map(d => priorityColors[d.priority] || '#94a3b8')
+                    backgroundColor: priorityData.map(d => priorityColors[d.priority] || '#94a3b8'),
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '65%' }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: 600 },
+                            padding: 14,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
         });
     }
 
-    // Category Chart
+    // Category Horizontal Bar Chart
     if (document.getElementById('categoryChart')) {
         new Chart(document.getElementById('categoryChart'), {
             type: 'bar',
@@ -210,7 +347,8 @@
                     label: 'Complaints',
                     data: categoryData.map(d => d.count),
                     backgroundColor: '#6366f1',
-                    borderRadius: 6
+                    borderRadius: 6,
+                    maxBarThickness: 24
                 }]
             },
             options: {
@@ -218,7 +356,17 @@
                 maintainAspectRatio: false,
                 indexAxis: 'y',
                 plugins: { legend: { display: false } },
-                scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { stepSize: 1, font: { size: 11 } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11, weight: 600 } }
+                    }
+                }
             }
         });
     }

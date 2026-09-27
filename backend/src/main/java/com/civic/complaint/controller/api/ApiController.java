@@ -124,12 +124,14 @@ public class ApiController {
 
     @GetMapping("/notifications")
     public ResponseEntity<Map<String, Object>> getNotifications(Authentication auth) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
         Map<String, Object> result = new HashMap<>();
-        if (user != null) {
-            result.put("unread", notificationRepo.countByUserIdAndIsReadFalse(user.getId()));
-            result.put("notifications",
-                notificationRepo.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(user.getId()));
+        if (auth != null && auth.getName() != null) {
+            User user = userRepo.findByUsername(auth.getName()).orElse(null);
+            if (user != null) {
+                result.put("unread", notificationRepo.countByUserIdAndIsReadFalse(user.getId()));
+                result.put("notifications",
+                    notificationRepo.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(user.getId()));
+            }
         }
         return ResponseEntity.ok(result);
     }
@@ -151,5 +153,11 @@ public class ApiController {
     @GetMapping("/ai/metrics")
     public ResponseEntity<Map<String, Object>> aiMetrics() {
         return ResponseEntity.ok(aiService.getModelMetrics());
+    }
+
+    @PostMapping("/ai/quick-scan")
+    public ResponseEntity<Map<String, Object>> quickScan(@RequestBody(required = false) Map<String, String> payload) {
+        String text = (payload != null && payload.containsKey("text")) ? payload.get("text") : "";
+        return ResponseEntity.ok(aiService.quickScan(text));
     }
 }

@@ -37,3 +37,13 @@ def test_flask_analyze_pipeline(client):
     data = response.get_json()
     assert data["priority"] == "CRITICAL"
     assert data["priorityScore"] >= 0.70
+
+def test_flask_quick_scan(client):
+    payload = {"text": "Live sparking electrical wire on road near school"}
+    response = client.post("/ai/quick-scan", json=payload)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["priority"] == "CRITICAL"
+    assert "category" in data
+    assert data["confidence"] > 0
+

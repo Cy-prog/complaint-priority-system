@@ -77,9 +77,12 @@ public class CitizenController {
 
     @GetMapping("/my-complaints")
     public String myComplaints(Authentication auth, Model model) {
+        if (auth == null || auth.getName() == null) {
+            return "redirect:/login";
+        }
         User user = userRepository.findByUsername(auth.getName()).orElse(null);
         if (user != null) {
-            List<Complaint> complaints = complaintService.getBycitizenId(user.getId());
+            List<Complaint> complaints = complaintService.getByCitizenId(user.getId());
             model.addAttribute("complaints", complaints);
             model.addAttribute("user", user);
         }

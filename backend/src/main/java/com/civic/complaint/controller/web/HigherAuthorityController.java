@@ -33,10 +33,14 @@ public class HigherAuthorityController {
         this.notificationRepo = notificationRepo;
     }
 
+    private User getUser(Authentication auth) {
+        String username = (auth != null && auth.getName() != null) ? auth.getName() : "authority";
+        return userRepo.findByUsername(username).orElse(null);
+    }
+
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth, Model model) {
-        String username = (auth != null && auth.getName() != null) ? auth.getName() : "authority";
-        User user = userRepo.findByUsername(username).orElse(null);
+        User user = getUser(auth);
 
         model.addAttribute("user", user);
         model.addAttribute("summary", analyticsService.getDashboardSummary());
@@ -69,7 +73,7 @@ public class HigherAuthorityController {
 
     @GetMapping("/departments")
     public String departments(Authentication auth, Model model) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
+        User user = getUser(auth);
         model.addAttribute("user", user);
         model.addAttribute("departments", deptRepo.findAll());
         model.addAttribute("categoryDistribution", analyticsService.getCategoryDistribution());
@@ -78,7 +82,7 @@ public class HigherAuthorityController {
 
     @GetMapping("/reports")
     public String reports(Authentication auth, Model model) {
-        User user = userRepo.findByUsername(auth.getName()).orElse(null);
+        User user = getUser(auth);
         model.addAttribute("user", user);
         model.addAttribute("summary", analyticsService.getDashboardSummary());
         model.addAttribute("complaintsTrend", analyticsService.getComplaintsTrend(90));

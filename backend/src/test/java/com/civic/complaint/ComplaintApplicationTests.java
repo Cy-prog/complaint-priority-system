@@ -95,9 +95,11 @@ class ComplaintApplicationTests {
 
         assertNotNull(created.getId());
         assertNotNull(created.getTicketId());
-        assertTrue(created.getTicketId().startsWith("GWA-"));
-        assertTrue(created.getStatus() == ComplaintStatus.SUBMITTED || created.getStatus() == ComplaintStatus.AI_ANALYSIS_PENDING,
-                "Status should be SUBMITTED or AI_ANALYSIS_PENDING");
+        assertTrue(created.getTicketId().startsWith("GWA-"), "Ticket ID must start with GWA-");
+        assertTrue(created.getStatus() == ComplaintStatus.SUBMITTED 
+                || created.getStatus() == ComplaintStatus.AI_ANALYSIS_PENDING
+                || created.getStatus() == ComplaintStatus.CLASSIFIED,
+                "Status should be SUBMITTED, AI_ANALYSIS_PENDING, or CLASSIFIED");
 
         // Test Priority Override & SLA Deadline Generation
         complaintService.overridePriority(

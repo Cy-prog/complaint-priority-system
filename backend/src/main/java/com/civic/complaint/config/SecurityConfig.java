@@ -33,7 +33,7 @@ public class SecurityConfig {
                 // Public citizen portal pages
                 .requestMatchers("/citizen/home", "/citizen/submit", "/citizen/track").permitAll()
                 // Public API endpoints
-                .requestMatchers("/api/auth/**", "/api/health", "/api/categories").permitAll()
+                .requestMatchers("/api/auth/**", "/api/health", "/api/categories", "/api/ai/quick-scan").permitAll()
                 // Citizen endpoints — require CITIZEN or higher
                 .requestMatchers("/citizen/**").hasAnyRole("CITIZEN", "ADMIN", "HIGHER_AUTHORITY")
                 .requestMatchers("/api/complaints/my/**").hasAnyRole("CITIZEN", "ADMIN", "HIGHER_AUTHORITY")
