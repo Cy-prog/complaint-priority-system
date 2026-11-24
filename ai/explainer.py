@@ -98,3 +98,40 @@ class Explainer:
             return f"Route to {category} department for scheduled workflow resolution."
         else:
             return "Log into regular maintenance queue."
+
+    def explain_decision(self, analysis: dict) -> dict:
+        """
+        Generates comprehensive explainability audit packet distinguishing
+        deterministic safety overrides from ML multi-factor scoring.
+        """
+        rules_applied = analysis.get("rules_applied", [])
+        is_rule_override = len(rules_applied) > 0
+        priority = analysis.get("priority", "LOW")
+        p_score = analysis.get("priority_score", 0)
+        
+        basis = "DETERMINISTIC_SAFETY_RULE" if is_rule_override else "MULTI_FACTOR_SCORING"
+        
+        factor_breakdown = {
+            "urgency": {"score": analysis.get("urgency_score", 0), "weight": 0.20},
+            "severity": {"score": analysis.get("severity_score", 0), "weight": 0.25},
+            "impact": {"score": analysis.get("impact_score", 0), "weight": 0.20},
+            "safety": {"score": analysis.get("safety_score", 0), "weight": 0.20},
+            "duration": {"score": analysis.get("duration_score", 0), "weight": 0.10},
+            "vulnerability": {"score": analysis.get("vulnerability_score", 0), "weight": 0.05}
+        }
+        
+        confidence = analysis.get("confidence", 0.0)
+        requires_human_review = confidence < 0.40 or (not is_rule_override and priority in ["CRITICAL", "HIGH"] and confidence < 0.60)
+        
+        return {
+            "priority": priority,
+            "priority_score": p_score,
+            "decision_basis": basis,
+            "rules_applied": rules_applied,
+            "factor_breakdown": factor_breakdown,
+            "requires_human_review": requires_human_review,
+            "confidence": confidence,
+            "model_version": analysis.get("analysis_model_version", "2.0.0-SmartCivic"),
+            "narrative_explanation": self.generate_explanation(analysis),
+            "recommended_action": self.generate_recommended_action(analysis)
+        }

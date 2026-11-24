@@ -8,6 +8,7 @@ from app.models.feedback import ComplaintFeedback, PriorityOverride, ComplaintSt
 from app.models.incident import Incident, IncidentComplaint
 from app.models.audit import AuditLog
 from app.models.similar_complaint import SimilarComplaint
+from app.models.notification import Notification
 
 __all__ = [
     "User",
@@ -22,5 +23,6 @@ __all__ = [
     "Incident",
     "IncidentComplaint",
     "AuditLog",
-    "SimilarComplaint"
+    "SimilarComplaint",
+    "Notification"
 ]

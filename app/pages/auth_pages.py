@@ -26,26 +26,68 @@ def login_submit(
     try:
         user, token = auth_service.login(username, password, db)
         resp = RedirectResponse(url="/", status_code=302)
-        resp.set_cookie(key="session_token", value=token, httponly=True, samesite="lax")
+        resp.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7)
         return resp
     except AuthenticationError as e:
         context = {"request": request, "error": str(e)}
         return templates.TemplateResponse(request=request, name="pages/login.html", context=context, status_code=401)
 
+@router.get("/register", response_class=HTMLResponse)
+def register_page(request: Request, user = Depends(get_optional_user), templates = Depends(get_templates)):
+    if user:
+        return RedirectResponse(url="/", status_code=302)
+    return templates.TemplateResponse(request=request, name="pages/login.html", context={"request": request, "mode": "register"})
+
+@router.post("/register")
+def register_submit(
+    request: Request,
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    full_name: str = Form(...),
+    phone: str = Form(None),
+    db: Session = Depends(get_db),
+    templates = Depends(get_templates)
+):
+    try:
+        user = auth_service.register_citizen(
+            username=username,
+            email=email,
+            password=password,
+            full_name=full_name,
+            phone=phone,
+            db=db
+        )
+        _, token = auth_service.login(username, password, db)
+        resp = RedirectResponse(url="/portal", status_code=302)
+        resp.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7)
+        return resp
+    except Exception as e:
+        context = {"request": request, "error": str(e), "mode": "register"}
+        return templates.TemplateResponse(request=request, name="pages/login.html", context=context, status_code=400)
+
 @router.get("/switch-persona/{role}")
 def switch_persona(role: str, request: Request, db: Session = Depends(get_db)):
-    if role == "citizen":
+    role_lower = role.lower()
+    
+    # 4 Canonical Personas for seamless demonstration & evaluation
+    if role_lower in ("super_admin", "admin", "apex"):
+        username, password, target_url = "admin", "admin123", "/"
+    elif role_lower in ("department_admin", "deptadmin", "dept_admin"):
+        username, password, target_url = "deptadmin", "admin123", "/department"
+    elif role_lower in ("officer", "operator", "field"):
+        username, password, target_url = "operator", "operator123", "/officer"
+    elif role_lower in ("citizen", "public"):
+        username, password, target_url = "citizen", "citizen123", "/portal"
+    else:
         resp = RedirectResponse(url="/portal", status_code=302)
         resp.delete_cookie("session_token")
         return resp
-    
-    username = "admin" if role == "admin" else "operator"
-    password = "admin123" if role == "admin" else "operator123"
-    
+
     try:
         user, token = auth_service.login(username, password, db)
-        resp = RedirectResponse(url="/", status_code=302)
-        resp.set_cookie(key="session_token", value=token, httponly=True, samesite="lax")
+        resp = RedirectResponse(url=target_url, status_code=302)
+        resp.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7)
         return resp
     except Exception:
         return RedirectResponse(url="/login", status_code=302)

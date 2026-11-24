@@ -15,6 +15,10 @@ from app.pages.settings_page import router as pages_settings_router
 from app.pages.auth_pages import router as pages_auth_router
 from app.pages.portal import router as pages_portal_router
 from app.pages.reports import router as pages_reports_router
+from app.pages.department_page import router as pages_department_router
+from app.pages.officer_page import router as pages_officer_router
+from app.pages.predictive_page import router as pages_predictive_router
+from app.pages.transparency_page import router as pages_transparency_router
 from app.middleware.rate_limit import setup_rate_limiting
 from app.services.auth_service import AuthService
 from app.models import Category, Department
@@ -22,9 +26,9 @@ from app.core.exceptions import ComplaintNotFoundError, AuthenticationError, Aut
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="AI Complaint Priority System",
-        description="Backend API layer of an AI-Based Complaint Priority System",
-        version="1.0.0"
+        title="SmartCivic AI – Intelligent Civic Complaint Management and Predictive Governance System",
+        description="Intelligent municipal complaint triage, real-time SLA escalation, GIS intelligence, and predictive governance platform",
+        version="2.0.0"
     )
 
     # Middleware
@@ -70,6 +74,10 @@ def create_app() -> FastAPI:
     app.include_router(pages_settings_router)
     app.include_router(pages_portal_router)
     app.include_router(pages_reports_router)
+    app.include_router(pages_department_router)
+    app.include_router(pages_officer_router)
+    app.include_router(pages_predictive_router)
+    app.include_router(pages_transparency_router)
 
     # Exception Handlers
     @app.exception_handler(ComplaintNotFoundError)

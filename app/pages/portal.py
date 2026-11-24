@@ -1,11 +1,11 @@
 import os
-import uuid
 from typing import Optional
 from fastapi import APIRouter, Depends, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
-from app.dependencies import get_db, get_templates
+from app.dependencies import get_db, get_templates, get_optional_user
 from app.services.complaint_service import ComplaintService
+from app.core.security import validate_and_sanitize_upload
 from app.models import Category, Department, Complaint
 
 router = APIRouter(prefix="/portal")
@@ -15,7 +15,12 @@ UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.get("", response_class=HTMLResponse)
-def citizen_portal_page(request: Request, db: Session = Depends(get_db), templates = Depends(get_templates)):
+def citizen_portal_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    user = Depends(get_optional_user),
+    templates = Depends(get_templates)
+):
     categories = db.query(Category).filter(Category.is_active == True).all()
     gwalior_wards = [
         "वार्ड 18 (महाराज बाड़ा / सराफा / लश्कर)",
@@ -33,6 +38,7 @@ def citizen_portal_page(request: Request, db: Session = Depends(get_db), templat
     ] + [f"वार्ड {i} (ग्वालियर नगर निगम)" for i in range(1, 67) if i not in [18, 12, 34, 48, 22, 7, 15, 28, 31, 42, 54, 60]]
     context = {
         "request": request,
+        "user": user,
         "categories": categories,
         "wards": gwalior_wards
     }
@@ -47,48 +53,75 @@ async def citizen_submit(
     ward: Optional[str] = Form(None),
     area: Optional[str] = Form(None),
     city: Optional[str] = Form("ग्वालियर (Gwalior)"),
+    latitude: Optional[float] = Form(None),
+    longitude: Optional[float] = Form(None),
     evidence_file: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user = Depends(get_optional_user)
 ):
     photo_url = None
     if evidence_file and evidence_file.filename:
-        ext = os.path.splitext(evidence_file.filename)[1]
-        unique_name = f"{uuid.uuid4().hex[:10]}{ext}"
-        file_path = os.path.join(UPLOAD_DIR, unique_name)
-        with open(file_path, "wb") as f:
-            content = await evidence_file.read()
-            f.write(content)
-        photo_url = f"/uploads/{unique_name}"
-        
+        content = await evidence_file.read()
+        if content:
+            safe_name = validate_and_sanitize_upload(
+                evidence_file.filename,
+                content,
+                evidence_file.content_type
+            )
+            file_path = os.path.join(UPLOAD_DIR, safe_name)
+            with open(file_path, "wb") as f:
+                f.write(content)
+            photo_url = f"/uploads/{safe_name}"
+
     complaint = complaint_service.create_citizen_complaint(
         complaint_text=complaint_text,
-        complainant_name=complainant_name,
-        complainant_contact=complainant_contact,
+        complainant_name=complainant_name or (user.full_name if user else None),
+        complainant_contact=complainant_contact or (user.phone if user else None),
         ward=ward,
         area=area,
         city=city,
         evidence_photo_path=photo_url,
-        db=db
+        db=db,
+        latitude=latitude,
+        longitude=longitude,
+        user_id=user.id if user else None
     )
     
     return RedirectResponse(url=f"/portal/receipt/{complaint.complaint_id}", status_code=303)
 
 @router.get("/receipt/{complaint_id}", response_class=HTMLResponse)
-def citizen_receipt_page(complaint_id: str, request: Request, db: Session = Depends(get_db), templates = Depends(get_templates)):
+def citizen_receipt_page(
+    complaint_id: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    user = Depends(get_optional_user),
+    templates = Depends(get_templates)
+):
     complaint = complaint_service.get_complaint(complaint_id, db)
     context = {
         "request": request,
+        "user": user,
         "complaint": complaint
     }
     return templates.TemplateResponse(request=request, name="pages/citizen_receipt.html", context=context)
 
 @router.get("/track", response_class=HTMLResponse)
-def citizen_track_page(request: Request, q: Optional[str] = None, db: Session = Depends(get_db), templates = Depends(get_templates)):
+def citizen_track_page(
+    request: Request,
+    q: Optional[str] = None,
+    db: Session = Depends(get_db),
+    user = Depends(get_optional_user),
+    templates = Depends(get_templates)
+):
     results = []
     if q and q.strip():
         results = complaint_service.search_by_contact_or_id(q.strip(), db)
+    elif user:
+        # If logged in as citizen, show user's own complaints automatically
+        results = db.query(Complaint).filter(Complaint.created_by_user_id == user.id).order_by(Complaint.created_at.desc()).all()
     context = {
         "request": request,
+        "user": user,
         "query": q or "",
         "results": results
     }

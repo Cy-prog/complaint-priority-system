@@ -1,7 +1,10 @@
 import re
 import yaml
+import warnings
 from pathlib import Path
 import joblib
+
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="joblib")
 
 try:
     from sklearn.feature_extraction.text import TfidfVectorizer
@@ -14,6 +17,7 @@ except ImportError:
 
 CONFIG_DIR = Path(__file__).parent.parent / "config"
 MODEL_PATH = Path(__file__).parent / "models" / "category_classifier.joblib"
+MODEL_VERSION = "2.0.0-SmartCivic"
 
 class CategoryClassifier:
     def __init__(self):
@@ -104,6 +108,18 @@ class CategoryClassifier:
                 pass
                 
         return kw_cat, kw_conf
+
+    def predict_with_metadata(self, text: str) -> dict:
+        category, confidence = self.predict(text)
+        requires_review = confidence < 0.40 or category == "Other"
+        return {
+            "category": category,
+            "confidence": confidence,
+            "requires_human_review": requires_review,
+            "model_version": MODEL_VERSION,
+            "model_algorithm": "TF-IDF + Calibrated LinearSVC",
+            "is_fallback": not (self.is_trained and self.model)
+        }
 
     def predict_subcategory(self, text: str, category: str) -> str | None:
         text_lower = text.lower()

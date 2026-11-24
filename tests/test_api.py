@@ -1,12 +1,20 @@
 import sys
 from pathlib import Path
+import importlib.util
 import pytest
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
-sys.path.insert(0, str(BASE_DIR / "ai-service"))
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 
-from app import app, API_KEY
+# Load ai-service without polluting or shadowing top-level 'app' package
+ai_service_path = BASE_DIR / "ai-service" / "app.py"
+spec = importlib.util.spec_from_file_location("ai_microservice_app", ai_service_path)
+ai_service_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(ai_service_module)
+
+app = ai_service_module.app
+API_KEY = ai_service_module.API_KEY
 
 @pytest.fixture
 def client():
@@ -46,4 +54,3 @@ def test_flask_quick_scan(client):
     assert data["priority"] == "CRITICAL"
     assert "category" in data
     assert data["confidence"] > 0
-

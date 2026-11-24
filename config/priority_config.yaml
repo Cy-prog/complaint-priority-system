@@ -1,5 +1,6 @@
 priority_weights:
-  severity: 0.30
+  urgency: 0.20
+  severity: 0.25
   impact: 0.20
   safety: 0.20
   service_disruption: 0.15

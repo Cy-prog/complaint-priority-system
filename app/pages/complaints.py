@@ -122,89 +122,93 @@ async def resolve_with_proof_action(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
+    from app.core.security import validate_and_sanitize_upload
     photo_url = None
     if resolution_photo_file and resolution_photo_file.filename:
-        ext = os.path.splitext(resolution_photo_file.filename)[1]
-        unique_name = f"res_{uuid.uuid4().hex[:10]}{ext}"
-        file_path = os.path.join(UPLOAD_DIR, unique_name)
-        with open(file_path, "wb") as f:
-            content = await resolution_photo_file.read()
-            f.write(content)
-        photo_url = f"/uploads/{unique_name}"
+        content = await resolution_photo_file.read()
+        if content:
+            safe_name = validate_and_sanitize_upload(
+                resolution_photo_file.filename,
+                content,
+                resolution_photo_file.content_type
+            )
+            file_path = os.path.join(UPLOAD_DIR, safe_name)
+            with open(file_path, "wb") as f:
+                f.write(content)
+            photo_url = f"/uploads/{safe_name}"
         
     complaint_service.resolve_with_proof(complaint_id, resolution_notes, photo_url, user.id, db)
     return RedirectResponse(url=f"/complaints/{complaint_id}", status_code=303)
+
+@router.post("/complaints/{complaint_id}/status")
+def update_status_form_action(
+    complaint_id: str,
+    status: str = Form(...),
+    notes: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+    from app.schemas.complaint import ComplaintUpdate
+    update_data = ComplaintUpdate(status=status, notes=notes)
+    complaint_service.update_complaint(complaint_id, update_data, db, user.id)
+    return RedirectResponse(url=f"/complaints/{complaint_id}?updated=true", status_code=303)
+
+@router.post("/complaints/{complaint_id}/override")
+def override_priority_form_action(
+    complaint_id: str,
+    new_priority: str = Form(...),
+    reason: str = Form(...),
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+    from app.services.priority_service import PriorityService
+    from app.schemas.analysis import PriorityOverrideRequest
+    p_service = PriorityService()
+    req = PriorityOverrideRequest(new_priority=new_priority, reason=reason)
+    p_service.override_priority(complaint_id, req, user.id, db)
+    return RedirectResponse(url=f"/complaints/{complaint_id}?overridden=true", status_code=303)
+
+@router.post("/complaints/{complaint_id}/reopen")
+def reopen_complaint_form_action(
+    complaint_id: str,
+    reason: Optional[str] = Form("Citizen dissatisfaction with resolution"),
+    db: Session = Depends(get_db),
+    user = Depends(get_optional_user)
+):
+    complaint = complaint_service.get_complaint(complaint_id, db)
+    complaint.status = "open"
+    complaint.citizen_feedback_status = "reopened"
+    complaint.reopen_count = (complaint.reopen_count or 0) + 1
+    
+    # Audit status change
+    from app.models import ComplaintStatusHistory
+    history = ComplaintStatusHistory(
+        complaint_id=complaint.id,
+        old_status="resolved",
+        new_status="open",
+        changed_by_user_id=user.id if user else None,
+        notes=f"Reopened by citizen: {reason}"
+    )
+    db.add(history)
+    db.commit()
+    return RedirectResponse(url=f"/complaints/{complaint_id}?reopened=true", status_code=303)
 
 @router.get("/map", response_class=HTMLResponse)
 def map_page(request: Request, db: Session = Depends(get_db), user = Depends(get_optional_user), templates = Depends(get_templates)):
     if not user:
         return RedirectResponse(url="/login", status_code=302)
         
-    complaints = db.query(Complaint).order_by(Complaint.created_at.desc()).limit(150).all()
     categories = db.query(Category).filter(Category.is_active == True).all()
+    from app.services.gis_service import GISService
+    gis_svc = GISService()
+    map_points = gis_svc.get_map_markers(db, limit=300)
+    ward_summaries = gis_svc.get_ward_spatial_summary(db)
     
-    # Gwalior Municipal Corporation (GMC) Base Coordinates (26.2183° N, 78.1828° E)
-    base_lat = 26.2183
-    base_lng = 78.1828
-    
-    # Specific Gwalior landmark anchor points
-    gwalior_hubs = {
-        "महाराज बाड़ा": (26.2045, 78.1578),
-        "लश्कर": (26.2080, 78.1550),
-        "थाटीपुर": (26.2230, 78.2180),
-        "मुरार": (26.2285, 78.2290),
-        "हजीरा": (26.2350, 78.1760),
-        "सिटी सेंटर": (26.2025, 78.1925),
-        "कलेक्ट्रेट": (26.2010, 78.1910),
-        "कंपू": (26.1950, 78.1500),
-        "दीनदयाल नगर": (26.2550, 78.2250),
-        "फूलबाग": (26.2150, 78.1710),
-        "किला गेट": (26.2310, 78.1690)
-    }
-    
-    map_points = []
-    for c in complaints:
-        if c.latitude and c.longitude and c.latitude > 25.0 and c.latitude < 28.0:
-            lat, lng = c.latitude, c.longitude
-        else:
-            # Check if area or ward matches a known Gwalior hub
-            matched_hub = None
-            text_to_check = f"{c.area or ''} {c.ward or ''} {c.complaint_text or ''}"
-            for hub_name, coords in gwalior_hubs.items():
-                if hub_name in text_to_check:
-                    matched_hub = coords
-                    break
-                    
-            h = int(hashlib.md5((c.complaint_id or str(c.id)).encode()).hexdigest(), 16)
-            lat_jitter = ((h % 1000) - 500) / 25000.0
-            lng_jitter = (((h // 1000) % 1000) - 500) / 25000.0
-            
-            if matched_hub:
-                lat = matched_hub[0] + lat_jitter * 0.4
-                lng = matched_hub[1] + lng_jitter * 0.4
-            else:
-                lat = base_lat + lat_jitter
-                lng = base_lng + lng_jitter
-            
-        prio = c.analysis.priority if c.analysis else "LOW"
-        map_points.append({
-            "id": c.complaint_id,
-            "lat": lat,
-            "lng": lng,
-            "title": c.complaint_text[:60] + "..." if len(c.complaint_text) > 60 else c.complaint_text,
-            "category": c.category.name if c.category else "General",
-            "priority": prio,
-            "status": c.status,
-            "ward": c.ward or "General",
-            "area": c.area or "",
-            "photo": c.evidence_photo,
-            "date": c.created_at.strftime("%d-%m-%Y") if c.created_at else ""
-        })
-        
     context = {
         "request": request,
         "user": user,
         "categories": categories,
-        "map_points": map_points
+        "map_points": map_points,
+        "ward_summaries": ward_summaries
     }
     return templates.TemplateResponse(request=request, name="pages/map.html", context=context)

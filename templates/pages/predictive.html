@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}Predictive Governance & Trends | SmartCivic AI{% endblock %}
+{% block page_title %}पूर्वानुमान एवं निवारक शासन (Predictive Governance){% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header / Scientific Disclaimer Banner -->
+    <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-lg border border-indigo-700/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-indigo-500/40 text-indigo-200 border border-indigo-400/30 uppercase tracking-wider">
+                    AI Predictive Governance
+                </span>
+                <span class="text-xs text-indigo-200">• Empirical Time-Series Modeling</span>
+            </div>
+            <h2 class="text-xl font-bold text-white mt-1">नागरिक समस्या पूर्वानुमान व अग्रिम निवारण प्रणाली</h2>
+            <p class="text-xs text-indigo-200 max-w-2xl mt-1">
+                Historical incident clustering combined with 14-day statistical projection to identify emerging civic hotspots before critical failure occurs.
+            </p>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur px-4 py-2.5 rounded-xl border border-white/10 text-right">
+            <p class="text-[10px] uppercase font-bold text-indigo-300">Model Engine</p>
+            <p class="text-xs font-mono font-bold text-white">OLS Trend + 95% CI</p>
+        </div>
+    </div>
+
+    <!-- 14-Day Forecast Chart -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+            <div>
+                <h3 class="text-sm font-bold text-slate-900">अगले 14 दिनों का शिकायत अनुमान (14-Day Complaint Volume Projection)</h3>
+                <p class="text-xs text-slate-500">Historical trendline projected forward with parametric confidence bounds</p>
+            </div>
+            <div class="flex items-center space-x-3 text-xs">
+                <span class="inline-flex items-center text-slate-600">
+                    <span class="w-3 h-3 bg-indigo-600 rounded-sm mr-1.5"></span> ऐतिहासिक (Historical)
+                </span>
+                <span class="inline-flex items-center text-amber-600">
+                    <span class="w-3 h-3 bg-amber-500 rounded-sm mr-1.5"></span> पूर्वानुमान (OLS Forecast)
+                </span>
+                <span class="inline-flex items-center text-slate-400">
+                    <span class="w-3 h-3 bg-slate-200 rounded-sm mr-1.5"></span> 95% Confidence Band
+                </span>
+            </div>
+        </div>
+
+        <div class="h-80 relative">
+            <canvas id="predictiveChart"></canvas>
+        </div>
+
+        <div class="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-start space-x-2">
+            <span class="text-base text-amber-500">ℹ️</span>
+            <div>
+                <span class="font-bold text-slate-800">डेटा पारदर्शिता नोट (Methodological Transparency):</span>
+                <span>{{ forecast.limitations }} Statistical projections are database-derived estimations intended to guide proactive resource staging.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recurring Failure Hotspots Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Hotspots Table -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900">बारंबार समस्या वाले क्षेत्र (Recurring Failure Hotspots)</h3>
+                    <p class="text-xs text-slate-500">Clusters of repeated breakdowns within specific wards</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                    High Risk
+                </span>
+            </div>
+
+            <div class="p-5 flex-1 divide-y divide-slate-100">
+                {% for spot in hotspots %}
+                <div class="py-3 first:pt-0 last:pb-0">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-xs text-slate-900">{{ spot.ward }}</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">
+                            {{ spot.frequency }} बारंबार घटनाएं
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-1">श्रेणी: <span class="font-semibold text-slate-800">{{ spot.category }}</span></p>
+                    <div class="mt-2 flex items-center justify-between text-[11px] bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <span class="text-indigo-700 font-medium">💡 निवारक कदम: {{ spot.action_recommended }}</span>
+                        <span class="text-slate-400">Score: {{ spot.risk_score }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-xs text-slate-400 py-6 text-center">कोई आवर्ती हॉटस्पॉट दर्ज नहीं हुआ।</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Seasonal Directives -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900">मौसमी जोखिम व दिशा-निर्देश (Seasonal Preparedness)</h3>
+                    <p class="text-xs text-slate-500">Proactive civic readiness guidelines based on weather cycles</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                    Advisory
+                </span>
+            </div>
+
+            <div class="p-5 flex-1 space-y-3">
+                {% for item in seasonal %}
+                <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-slate-50 transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs font-bold text-slate-900 flex items-center">
+                            <span class="mr-1.5">🌧️</span> {{ item.season }} – {{ item.category }}
+                        </span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase
+                            {{ 'bg-red-100 text-red-800' if item.risk_level == 'High' else 'bg-amber-100 text-amber-800' }}">
+                            {{ item.risk_level }} Risk
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">{{ item.directive }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const historicalDates = {{ forecast.historical_dates | default([]) | tojson }};
+    const historicalCounts = {{ forecast.historical_counts | default([]) | tojson }};
+    const forecastDates = {{ forecast.days | default([]) | tojson }};
+    const forecastCounts = {{ forecast.forecast | default([]) | tojson }};
+    const lowerCi = {{ forecast.lower_ci | default([]) | tojson }};
+    const upperCi = {{ forecast.upper_ci | default([]) | tojson }};
+
+    const allLabels = [...historicalDates, ...forecastDates];
+    
+    // Historical line: historical values, then nulls for forecast dates
+    const histData = [...historicalCounts, ...forecastDates.map(() => null)];
+    
+    // Forecast line: nulls for historical except connect to last historical point, then forecast values
+    const lastHist = historicalCounts.length > 0 ? historicalCounts[historicalCounts.length - 1] : 0;
+    const foreData = [...historicalCounts.map((_, i) => i === historicalCounts.length - 1 ? lastHist : null), ...forecastCounts];
+    
+    const upperData = [...historicalCounts.map(() => null), ...upperCi];
+    const lowerData = [...historicalCounts.map(() => null), ...lowerCi];
+
+    const ctx = document.getElementById('predictiveChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allLabels,
+            datasets: [
+                {
+                    label: 'Historical Volume',
+                    data: histData,
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    fill: false,
+                    tension: 0.2,
+                    borderWidth: 2,
+                    pointRadius: 3
+                },
+                {
+                    label: 'Predicted Volume (OLS)',
+                    data: foreData,
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.1,
+                    borderWidth: 2,
+                    pointRadius: 4
+                },
+                {
+                    label: 'Upper 95% CI',
+                    data: upperData,
+                    borderColor: 'rgba(148, 163, 184, 0.4)',
+                    borderDash: [2, 2],
+                    pointRadius: 0,
+                    fill: '+1',
+                    backgroundColor: 'rgba(226, 232, 240, 0.4)'
+                },
+                {
+                    label: 'Lower 95% CI',
+                    data: lowerData,
+                    borderColor: 'rgba(148, 163, 184, 0.4)',
+                    borderDash: [2, 2],
+                    pointRadius: 0,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { precision: 0 }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { maxRotation: 45, minRotation: 45 }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

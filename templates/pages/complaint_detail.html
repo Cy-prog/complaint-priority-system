@@ -261,13 +261,13 @@
                         <svg class="w-4 h-4 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" class="p-4 bg-white border-t border-slate-200 space-y-3">
-                        <form hx-put="/api/complaints/{{ complaint.complaint_id }}" hx-swap="none" class="space-y-3">
+                        <form method="POST" action="/complaints/{{ complaint.complaint_id }}/status" class="space-y-3">
                             <select name="status" class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs text-slate-800">
-                                <option value="open">खुली (Open)</option>
-                                <option value="in_progress">प्रगति पर (In Progress)</option>
-                                <option value="resolved">निस्तारित (Resolved)</option>
-                                <option value="closed">सत्यापित व बंद (Closed)</option>
-                                <option value="rejected">अस्वीकृत (Rejected)</option>
+                                <option value="open" {% if complaint.status == 'open' %}selected{% endif %}>खुली (Open)</option>
+                                <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>प्रगति पर (In Progress)</option>
+                                <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>निस्तारित (Resolved)</option>
+                                <option value="closed" {% if complaint.status == 'closed' %}selected{% endif %}>सत्यापित व बंद (Closed)</option>
+                                <option value="rejected" {% if complaint.status == 'rejected' %}selected{% endif %}>अस्वीकृत (Rejected)</option>
                             </select>
                             <textarea name="notes" rows="2" placeholder="आंतरिक टिप्पणी (Optional notes)" class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs"></textarea>
                             <button type="submit" class="w-full py-2 px-4 border border-transparent shadow-sm text-xs font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 transition">स्थिति अपडेट करें</button>
@@ -276,24 +276,45 @@
                 </div>
                 
                 <!-- Priority Override (Apex Admin Feature) -->
+                {% if not user or user.role in ['admin', 'super_admin', 'department_admin'] %}
                 <div x-data="{ open: false }" class="border border-slate-200 rounded-xl overflow-hidden">
                     <button @click="open = !open" class="w-full px-4 py-2.5 bg-slate-50 flex justify-between items-center text-xs font-bold text-slate-800 hover:bg-slate-100 transition">
                         <span>प्राथमिकता अधिरोहण (Override AI Priority)</span>
                         <svg class="w-4 h-4 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div x-show="open" class="p-4 bg-white border-t border-slate-200 space-y-3">
-                        <form hx-post="/api/complaints/{{ complaint.complaint_id }}/override" hx-swap="none" class="space-y-3">
+                        <form method="POST" action="/complaints/{{ complaint.complaint_id }}/override" class="space-y-3">
                             <select name="new_priority" required class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs text-slate-800">
                                 <option value="CRITICAL">🔴 CRITICAL (आपातकालीन)</option>
                                 <option value="HIGH">🟠 HIGH (उच्च)</option>
                                 <option value="MEDIUM">🟡 MEDIUM (मध्यम)</option>
                                 <option value="LOW">🟢 LOW (सामान्य)</option>
                             </select>
-                            <textarea name="reason" required rows="2" placeholder="प्राथमिकता बदलने का आधिकारिक कारण (Required)" class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs"></textarea>
+                            <textarea name="reason" required rows="2" placeholder="प्राथमिकता बदलने का आधिकारिक कारण (Required rationale)" class="block w-full border-slate-300 rounded-xl shadow-sm focus:ring-orange-500 text-xs"></textarea>
                             <button type="submit" class="w-full py-2 px-4 border border-transparent shadow-sm text-xs font-bold rounded-xl text-white bg-orange-600 hover:bg-orange-700 transition">प्राथमिकता बदलें</button>
                         </form>
                     </div>
                 </div>
+                {% endif %}
+
+                <!-- Reopen Complaint (Citizen / Operator Action) -->
+                {% if complaint.status in ['resolved', 'closed'] %}
+                <div x-data="{ open: false }" class="border border-red-200 rounded-xl overflow-hidden bg-red-50/50">
+                    <button @click="open = !open" class="w-full px-4 py-2.5 bg-red-50 flex justify-between items-center text-xs font-bold text-red-900 hover:bg-red-100 transition">
+                        <span class="flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            <span>शिकायत पुनः खोलें (Reopen Complaint)</span>
+                        </span>
+                        <svg class="w-4 h-4 transition-transform" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div x-show="open" class="p-4 bg-white border-t border-red-200 space-y-3">
+                        <form method="POST" action="/complaints/{{ complaint.complaint_id }}/reopen" class="space-y-3">
+                            <textarea name="reason" required rows="2" placeholder="पुनः खोलने का कारण (उदा. समस्या पूरी तरह ठीक नहीं हुई)" class="block w-full border-red-300 rounded-xl shadow-sm focus:ring-red-500 text-xs"></textarea>
+                            <button type="submit" class="w-full py-2 px-4 border border-transparent shadow-sm text-xs font-bold rounded-xl text-white bg-red-600 hover:bg-red-700 transition">शिकायत पुनः खोलें (Reopen)</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
                 
             </div>
         </div>

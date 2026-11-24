@@ -209,7 +209,7 @@ class ComplaintAnalysisPipeline:
                 similar_incidents=similar_incidents,
                 language=lang,
                 provenance=entities.get("provenance", {}),
-                analysis_model_version="1.1.0",
+                analysis_model_version="2.0.0-SmartCivic",
                 analysis_latency_ms=round(latency_ms, 2)
             )
 
@@ -224,7 +224,7 @@ class ComplaintAnalysisPipeline:
                 affected_population=None, affected_population_estimate=None,
                 reasoning_summary=f"Automated analysis fallback: {str(e)}", recommended_action="Manual administrative review required",
                 duplicate_probability=0.0, similar_complaint_ids=[], language="en",
-                analysis_model_version="1.1.0", analysis_latency_ms=round(latency_ms, 2)
+                analysis_model_version="2.0.0-SmartCivic", analysis_latency_ms=round(latency_ms, 2)
             )
 
 _pipeline_instance = None

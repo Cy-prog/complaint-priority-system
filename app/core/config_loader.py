@@ -6,11 +6,13 @@ from typing import Dict, List
 
 # Define models
 class PriorityWeights(BaseModel):
-    urgency: float
-    severity: float
-    impact: float
-    safety: float
-    duration: float
+    urgency: float = 0.20
+    severity: float = 0.25
+    impact: float = 0.20
+    safety: float = 0.20
+    service_disruption: float = 0.15
+    duration: float = 0.10
+    vulnerability: float = 0.05
 
 class SLAPolicy(BaseModel):
     response_hours: int

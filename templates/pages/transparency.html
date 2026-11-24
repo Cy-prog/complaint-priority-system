@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Public Civic Transparency Portal | SmartCivic AI{% endblock %}
+{% block page_title %}सार्वजनिक जन-पारदर्शिता पोर्टल (Civic Transparency){% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Hero Banner -->
+    <div class="bg-gradient-to-r from-emerald-900 to-teal-950 text-white p-6 sm:p-8 rounded-2xl shadow-xl border border-emerald-700/40">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold mb-3">
+                <span>🏛️ नगर निगम ग्वालियर खुला शासन (Open Municipal Governance)</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">सार्वजनिक शिकायत निवारण व पारदर्शिता डैशबोर्ड</h2>
+            <p class="text-xs sm:text-sm text-emerald-100 mt-2 leading-relaxed">
+                Empowering citizens through real-time operational transparency. All municipal complaint metrics, departmental resolution rates, and SLA commitments are published live with zero PII exposure.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-3">
+                <a href="/portal" class="px-4 py-2 bg-saffron-500 hover:bg-saffron-600 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center">
+                    <span>नई शिकायत दर्ज करें</span>
+                    <span class="ml-1.5">&rarr;</span>
+                </a>
+                <a href="/portal/track" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition border border-white/20">
+                    शिकायत की स्थिति जांचें (Track)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Performance KPIs -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500 uppercase">कुल प्राप्त शिकायतें</span>
+            <p class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{{ total }}</p>
+            <p class="text-[11px] text-slate-400 mt-1">Total Registered</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500 uppercase">सफलतापूर्वक निस्तारित</span>
+            <p class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">{{ resolved }}</p>
+            <p class="text-[11px] text-emerald-600 font-semibold mt-1">{{ resolution_percentage }}% निवारण दर</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500 uppercase">SLA अनुपालन दर</span>
+            <p class="text-2xl sm:text-3xl font-black text-blue-600 mt-2">{{ sla_compliance_rate }}%</p>
+            <p class="text-[11px] text-slate-400 mt-1">Within standard timelines</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <span class="text-xs font-semibold text-slate-500 uppercase">वर्तमान में प्रगतिरत</span>
+            <p class="text-2xl sm:text-3xl font-black text-amber-600 mt-2">{{ pending }}</p>
+            <p class="text-[11px] text-slate-400 mt-1">Active field operations</p>
+        </div>
+    </div>
+
+    <!-- Charts & Category Distribution -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-1">
+            <h3 class="text-sm font-bold text-slate-900 mb-1">नागरिक सेवाओं का वितरण</h3>
+            <p class="text-xs text-slate-500 mb-4">Volume by municipal service domain</p>
+            <div class="h-64 relative">
+                <canvas id="transparencyCategoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Privacy-Safe Public Resolution Feed -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900">हाल ही में निस्तारित नागरिक कार्य (Recent Resolved Feed)</h3>
+                    <p class="text-xs text-slate-500">Live feed of verified civic resolutions across Gwalior municipal wards</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Live Verified
+                </span>
+            </div>
+
+            <div class="overflow-x-auto flex-1">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+                            <th class="py-3 px-4">ट्रैकिंग टोकन</th>
+                            <th class="py-3 px-4">सेवा श्रेणी</th>
+                            <th class="py-3 px-4">वार्ड क्षेत्र</th>
+                            <th class="py-3 px-4">समाधान तिथि</th>
+                            <th class="py-3 px-4">सत्यापन स्थिति</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for item in recent_resolutions %}
+                        <tr class="hover:bg-slate-50/70 transition">
+                            <td class="py-3 px-4 font-mono font-bold text-slate-800">{{ item.id }}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-700">{{ item.category }}</td>
+                            <td class="py-3 px-4 text-slate-600">{{ item.ward }}</td>
+                            <td class="py-3 px-4 text-slate-500">{{ item.resolved_at }}</td>
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1"></span>
+                                    {{ item.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-slate-400">
+                                कोई निस्तारित शिकायत उपलब्ध नहीं है।
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- DPDP Data Privacy Statement -->
+    <div class="p-4 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-start space-x-3">
+        <span class="text-lg">🔒</span>
+        <div>
+            <h4 class="font-bold text-slate-800">डिजिटल व्यक्तिगत डेटा संरक्षण अनुपालन (DPDP Act Compliance):</h4>
+            <p class="mt-0.5 leading-relaxed">
+                SmartCivic AI strictly enforces privacy-by-design. In compliance with data protection laws, this public portal never reveals citizen identities, phone numbers, contact details, or exact private residential addresses. All statistics and resolution feeds are cryptographically sanitized.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const catData = {{ category_distribution | default([]) | tojson }};
+    const labels = catData.map(c => c.category);
+    const data = catData.map(c => c.count);
+
+    const ctx = document.getElementById('transparencyCategoryChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    '#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 12, font: { size: 10 } }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

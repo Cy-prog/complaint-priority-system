@@ -42,9 +42,12 @@ class ComplaintService:
         area: Optional[str],
         city: Optional[str],
         evidence_photo_path: Optional[str],
-        db: Session
+        db: Session,
+        latitude: Optional[float] = None,
+        longitude: Optional[float] = None,
+        user_id: Optional[int] = None
     ) -> Complaint:
-        """Citizen portal submission with auto-analysis."""
+        """Citizen portal submission with auto-analysis and real coordinates."""
         from app.services.analysis_service import AnalysisService
         
         count = db.query(Complaint).count()
@@ -58,6 +61,9 @@ class ComplaintService:
             ward=ward,
             area=area,
             city=city or "Gram Panchayat Area",
+            latitude=latitude,
+            longitude=longitude,
+            created_by_user_id=user_id,
             evidence_photo=evidence_photo_path,
             status='pending'
         )

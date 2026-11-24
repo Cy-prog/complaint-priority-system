@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}Department Workspace | SmartCivic AI{% endblock %}
+{% block page_title %}{{ department.name if department else 'Municipal Department' }} Workspace{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="{ reassignModal: false, selectedComplaintId: null }">
+    <!-- Department Switcher & Quick Actions -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-xl shadow-sm">
+                🏢
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-slate-900">{{ department.name if department else 'Department Management' }}</h2>
+                <p class="text-xs text-slate-500">Department Code: {{ department.code | default('DEPT-01') }} • Officer Workforce & SLA Management</p>
+            </div>
+        </div>
+
+        <!-- Department Selector & Export Actions -->
+        <div class="flex flex-wrap items-center gap-2">
+            <div class="dropdown relative" x-data="{ open: false }">
+                <button @click="open = !open" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 flex items-center">
+                    <span>विभाग बदलें (Switch Dept)</span>
+                    <svg class="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-40">
+                    {% for dept in all_departments %}
+                    <a href="/department?dept_id={{ dept.id }}" class="block px-3 py-1.5 text-xs text-slate-700 hover:bg-indigo-50 hover:text-indigo-900 transition {{ 'font-bold bg-indigo-50/50' if department and dept.id == department.id else '' }}">
+                        {{ dept.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <a href="/api/reports/pdf?department_id={{ department.id if department else '' }}" target="_blank" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition shadow-sm flex items-center">
+                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                PDF रिपोर्ट
+            </a>
+            <a href="/api/reports/excel" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition shadow-sm flex items-center">
+                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Excel Export
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase">कुल विभाग शिकायतें</span>
+                <span class="p-2 rounded-lg bg-blue-50 text-blue-600 text-sm">📋</span>
+            </div>
+            <p class="text-2xl font-black text-slate-900 mt-2">{{ sla_metrics.total_complaints | default(0) }}</p>
+            <p class="text-[11px] text-slate-400 mt-1">Pending + Resolved</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase">SLA अनुपालन दर</span>
+                <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600 text-sm">⏱️</span>
+            </div>
+            <p class="text-2xl font-black text-emerald-600 mt-2">{{ sla_metrics.sla_compliance_rate | default(100.0) }}%</p>
+            <p class="text-[11px] text-slate-400 mt-1">{{ sla_metrics.breached_count | default(0) }} उल्लंघन (Breached)</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase">औसत समाधान समय</span>
+                <span class="p-2 rounded-lg bg-amber-50 text-amber-600 text-sm">⌛</span>
+            </div>
+            <p class="text-2xl font-black text-amber-600 mt-2">{{ sla_metrics.avg_resolution_hours | default(0) }} hrs</p>
+            <p class="text-[11px] text-slate-400 mt-1">First-action to resolution</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500 uppercase">कार्यरत फील्ड अधिकारी</span>
+                <span class="p-2 rounded-lg bg-purple-50 text-purple-600 text-sm">👷</span>
+            </div>
+            <p class="text-2xl font-black text-purple-600 mt-2">{{ officers | length }}</p>
+            <p class="text-[11px] text-slate-400 mt-1">Active Staff Personnel</p>
+        </div>
+    </div>
+
+    <!-- Officer Workload & Capacity Grid -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-bold text-slate-900">अधिकारी कार्यभार व क्षमता (Workforce Load Balancing)</h3>
+                <p class="text-xs text-slate-500">Real-time load tracking for optimal ticket distribution</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                AI Balanced
+            </span>
+        </div>
+
+        <div class="p-5">
+            {% if officers %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for off in officers %}
+                <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-50 transition">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                                {{ off.name[0] | upper }}
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">{{ off.name }}</h4>
+                                <p class="text-[10px] text-slate-500 truncate max-w-[140px]">{{ off.email }}</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ 'bg-emerald-100 text-emerald-800' if off.status == 'Available' else 'bg-amber-100 text-amber-800' if off.status == 'Busy' else 'bg-rose-100 text-rose-800' }}">
+                            {{ off.status }}
+                        </span>
+                    </div>
+
+                    <!-- Capacity Progress Bar -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-[11px] font-medium text-slate-600">
+                            <span>कार्यभार (Load): {{ off.active_complaints }} / {{ off.capacity_limit }}</span>
+                            <span class="font-bold text-slate-800">{{ off.capacity_percentage }}%</span>
+                        </div>
+                        <div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-300 {{ 'bg-emerald-500' if off.capacity_percentage < 60 else 'bg-amber-500' if off.capacity_percentage < 85 else 'bg-rose-500' }}" style="width: {{ off.capacity_percentage }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-slate-400">
+                <p class="text-sm font-medium">इस विभाग में कोई अधिकारी दर्ज नहीं है।</p>
+                <p class="text-xs mt-1">No officers assigned to this department yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Department Queue Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-bold text-slate-900">विभाग शिकायत पंजी (Department Queue)</h3>
+                <p class="text-xs text-slate-500">Active municipal complaints assigned to this division</p>
+            </div>
+            <a href="/complaints?department={{ department.name if department else '' }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">
+                View Full Registry &rarr;
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-slate-50/80 border-b border-slate-100 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+                        <th class="py-3 px-4">शिकायत आईडी</th>
+                        <th class="py-3 px-4">विवरण</th>
+                        <th class="py-3 px-4">वार्ड</th>
+                        <th class="py-3 px-4">प्राथमिकता (Priority)</th>
+                        <th class="py-3 px-4">स्थिति (Status)</th>
+                        <th class="py-3 px-4">नियुक्त अधिकारी</th>
+                        <th class="py-3 px-4 text-right">कार्य (Action)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for comp in complaints %}
+                    <tr class="hover:bg-slate-50/70 transition">
+                        <td class="py-3 px-4 font-mono font-bold text-slate-900">
+                            <a href="/complaints/{{ comp.id }}" class="text-indigo-600 hover:underline">
+                                {{ comp.complaint_id }}
+                            </a>
+                        </td>
+                        <td class="py-3 px-4">
+                            <p class="font-medium text-slate-800 line-clamp-1 max-w-xs">{{ comp.title }}</p>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">{{ comp.ward | default('सामान्य') }}</td>
+                        <td class="py-3 px-4">
+                            {% set p = comp.priority.value if comp.priority else 'medium' %}
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase
+                                {{ 'bg-red-100 text-red-800 border border-red-200' if p == 'critical' else
+                                   'bg-orange-100 text-orange-800 border border-orange-200' if p == 'high' else
+                                   'bg-blue-100 text-blue-800 border border-blue-200' if p == 'medium' else
+                                   'bg-slate-100 text-slate-700 border border-slate-200' }}">
+                                {{ p }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase
+                                {{ 'bg-green-100 text-green-800' if comp.status in ['resolved', 'closed'] else
+                                   'bg-amber-100 text-amber-800' if comp.status == 'in_progress' else
+                                   'bg-slate-100 text-slate-800' }}">
+                                {{ comp.status }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">
+                            {{ comp.assigned_user.full_name if comp.assigned_user else 'Unassigned' }}
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            <a href="/complaints/{{ comp.id }}" class="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition">
+                                समीक्षा &rarr;
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400">
+                            कोई लंबित शिकायत नहीं मिली। (No active complaints for this department)
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
