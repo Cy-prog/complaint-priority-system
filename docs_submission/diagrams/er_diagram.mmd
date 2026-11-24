@@ -1,0 +1,72 @@
+erDiagram
+    USERS ||--o{ COMPLAINTS : "creates / assigned_to"
+    USERS ||--o{ PRIORITY_OVERRIDES : "authorizes"
+    USERS ||--o{ COMPLAINT_STATUS_HISTORY : "triggers"
+    USERS ||--o{ COMPLAINT_FEEDBACK : "submits"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    USERS ||--o{ AUDIT_LOGS : "acts_in"
+    DEPARTMENTS ||--o{ USERS : "employs"
+    DEPARTMENTS ||--o{ CATEGORIES : "manages"
+    DEPARTMENTS ||--o{ COMPLAINTS : "assigned_department"
+    CATEGORIES ||--o{ COMPLAINTS : "classifies"
+    COMPLAINTS ||--|| COMPLAINT_ANALYSIS : "triaged_by"
+    COMPLAINTS ||--|| SLA_RECORDS : "governed_by"
+    COMPLAINTS ||--o{ PRIORITY_OVERRIDES : "overridden_by"
+    COMPLAINTS ||--o{ COMPLAINT_STATUS_HISTORY : "tracks_history"
+    COMPLAINTS ||--o{ COMPLAINT_FEEDBACK : "receives_feedback"
+    COMPLAINTS ||--o{ SIMILAR_COMPLAINTS : "matched_with"
+    INCIDENTS ||--o{ INCIDENT_COMPLAINTS : "aggregates"
+    COMPLAINTS ||--o{ INCIDENT_COMPLAINTS : "belongs_to"
+
+    USERS {
+        int id PK
+        string username
+        string email
+        string password_hash
+        string role
+        string phone
+        int department_id FK
+    }
+    DEPARTMENTS {
+        int id PK
+        string name
+        string contact_email
+    }
+    CATEGORIES {
+        int id PK
+        string name
+        string risk_level
+        boolean is_essential_service
+        int department_id FK
+    }
+    COMPLAINTS {
+        int id PK
+        string complaint_id UK
+        text complaint_text
+        string status
+        string ward
+        float latitude
+        float longitude
+        int category_id FK
+        int assigned_department_id FK
+        int assigned_user_id FK
+        int created_by_user_id FK
+        string evidence_photo
+        string resolution_photo
+    }
+    COMPLAINT_ANALYSIS {
+        int id PK
+        int complaint_id FK
+        string priority
+        int priority_score
+        float confidence
+        json entities
+        text reasoning_summary
+    }
+    SLA_RECORDS {
+        int id PK
+        int complaint_id FK
+        string priority
+        datetime sla_deadline
+        boolean is_breached
+    }

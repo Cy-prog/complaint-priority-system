@@ -1,0 +1,38 @@
+flowchart LR
+    Citizen((Citizen))
+    Officer((Field Officer))
+    DeptAdmin((Dept Admin))
+    SuperAdmin((Super Admin))
+
+    subgraph SmartCivicSystem ["SmartCivic AI Grievance System"]
+        UC1["Submit Grievance & Evidence"]
+        UC2["Track Status via Token"]
+        UC3["Verify Resolution & Reopen"]
+        UC4["View Public Transparency"]
+        UC5["Inspect Assigned Queue"]
+        UC6["Update Field Status & Upload Proof"]
+        UC7["Manage Divisional Workload"]
+        UC8["Reassign Field Officers"]
+        UC9["Apex Command Overview"]
+        UC10["Trigger SLA Escalation Sweeps"]
+        UC11["Analyze 14-Day Predictive Forecast"]
+        UC12["Export CSV / Excel / PDF Dossiers"]
+    end
+
+    Citizen --> UC1
+    Citizen --> UC2
+    Citizen --> UC3
+    Citizen --> UC4
+
+    Officer --> UC5
+    Officer --> UC6
+    Officer --> UC2
+
+    DeptAdmin --> UC7
+    DeptAdmin --> UC8
+    DeptAdmin --> UC12
+
+    SuperAdmin --> UC9
+    SuperAdmin --> UC10
+    SuperAdmin --> UC11
+    SuperAdmin --> UC12

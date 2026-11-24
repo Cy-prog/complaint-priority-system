@@ -1,0 +1,18 @@
+flowchart TD
+    Citizen["Citizen User"]
+    Officer["Field Officer"]
+    Admin["Municipal Administrator"]
+    SMTP["SMTP Mail Server"]
+
+    SC["0.0\nSmartCivic AI System\n(Intelligent Municipal Platform)"]
+
+    Citizen -->|"Grievance Text, Location, Photo"| SC
+    SC -->|"Tracking Token, Live Status, Resolution Proof"| Citizen
+
+    SC -->|"Assigned Task Details, SLA Deadlines"| Officer
+    Officer -->|"Field Status Update, Resolution Evidence"| Officer
+
+    Admin -->|"Manual Reassignment, System Policies"| SC
+    SC -->|"GIS Analytics, 14-Day Forecast, Dossiers"| Admin
+
+    SC -->|"Emergency SLA Breach Alerts"| SMTP

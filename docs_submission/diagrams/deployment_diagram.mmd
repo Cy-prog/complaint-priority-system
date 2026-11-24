@@ -1,0 +1,36 @@
+flowchart TD
+    subgraph ClientNodes ["Client Devices"]
+        CB["Citizen Web Browser / Mobile Device"]
+        OB["Field Officer Mobile Portal"]
+        AB["Administrator Command Workstation"]
+    end
+
+    subgraph EdgeRouting ["Edge & Network Routing"]
+        RP["Reverse Proxy / Nginx / Cloudflare (TLS 443 Termination)"]
+    end
+
+    subgraph ApplicationHost ["Docker Application Container"]
+        ASGI["Uvicorn ASGI High-Concurrency Server"]
+        FASTAPI["FastAPI 0.136.1 Web & REST Subsystem"]
+        AILIB["Scikit-Learn 1.9.0 / LinearSVC Model"]
+        ORM["SQLAlchemy 2.0.52 ORM Engine"]
+    end
+
+    subgraph StorageSubsystem ["Persistent Storage Volumes"]
+        SQLDB[("SQLite database (data/complaints.db) / PostgreSQL 15")]
+        MEDIA[("Static Uploads Directory (/uploads)")]
+    end
+
+    subgraph ExternalServices ["External Infrastructure"]
+        SMTP_SERVER["Municipal SMTP Email Server"]
+        OSM_TILES["OpenStreetMap CDN Tile Servers"]
+    end
+
+    ClientNodes -->|"HTTPS / WSS"| EdgeRouting
+    EdgeRouting -->|"Port 8000"| ApplicationHost
+    FASTAPI --> ORM
+    FASTAPI --> AILIB
+    ORM --> SQLDB
+    FASTAPI --> MEDIA
+    FASTAPI -->|"TLS / SMTP (587)"| SMTP_SERVER
+    ClientNodes -->|"Direct Tile Fetch"| OSM_TILES

@@ -1,0 +1,30 @@
+flowchart TD
+    A["Raw Grievance Submission"] --> B["Language Normalizer (Hindi / English)"]
+    B --> C["TF-IDF Vectorizer (1-2 N-grams)"]
+    C --> D["Calibrated LinearSVC Classifier"]
+    D --> E["Posterior Probability Confidence Estimation"]
+    
+    B --> F["Entity, Landmark & Risk Extractor"]
+    F --> G["Duration & Population Extraction"]
+    
+    B --> H["VADER Lexicon Sentiment Analyzer"]
+    
+    D & F & G & H --> I["Multi-Factor Priority Scoring Engine"]
+    I --> J["Compute Raw Score [0-100]"]
+    
+    J --> K["Deterministic Safety Invariant Guard"]
+    K --> L{"Acute Life Safety\nHazard Detected?"}
+    
+    L -->|"YES (Gas leak, wire, collapse)"| M["Force Priority = CRITICAL\nScore = max(Score, 80)\nAppend Hard Rule Audit Tag"]
+    L -->|"NO"| N["Assign Score Tier\n(CRITICAL >=80, HIGH >=60, MED >=35, LOW <35)"]
+    
+    M --> O["Confidence Gate Check"]
+    N --> O
+    
+    O --> P{"Confidence < 0.40?"}
+    P -->|"YES"| Q["Flag: needs_human_review = True"]
+    P -->|"NO"| R["Direct Pipeline Dispatch"]
+    
+    Q --> S["SentenceTransformer Duplicate Detection"]
+    R --> S
+    S --> T["Structured Decision Explanation & Audit Record"]

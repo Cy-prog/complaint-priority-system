@@ -1,0 +1,27 @@
+flowchart TD
+    Input["Raw Complaint Text"] --> P31["3.1 Preprocessing & Language Detection"]
+    P31 --> P32["3.2 TF-IDF & LinearSVC Classification"]
+    P31 --> P33["3.3 Entity, Landmark & Hazard Extraction"]
+    P31 --> P34["3.4 VADER Sentiment Polarity"]
+    
+    P32 & P33 & P34 --> P35["3.5 Multi-Factor Priority Score Formulation (0-100)"]
+    P35 --> P36["3.6 Deterministic Safety Invariant Override Guard"]
+    
+    P36 --> Decision{"Acute Hazard\nTriggered?"}
+    Decision -->|"Yes (Gas/Wire/Fire)"| Escalate["Force Priority = CRITICAL\nScore >= 80\nLog Reason Tag"]
+    Decision -->|"No"| ConfGate["3.7 Confidence Evaluation"]
+    
+    Escalate --> StoreAnalysis[("Store complaint_analysis")]
+    ConfGate -->|"Confidence < 0.40"| FlagReview["Flag needs_human_review = True"]
+    ConfGate -->|"Confidence >= 0.40"| StoreAnalysis
+    FlagReview --> StoreAnalysis
+
+    subgraph SLAEngine ["SLA Escalation Subsystem (4.0)"]
+        StoreAnalysis --> P41["4.1 Initialize SLARecord Deadline"]
+        P41 --> P42["4.2 Background Escalation Sweep Daemon"]
+        P42 --> P43{"Deadline\nBreached?"}
+        P43 -->|"Yes & Unresolved"| P44["Promote Priority +1 Tier\nAdd +20 Urgency Penalty\nSet is_breached = True"]
+        P44 --> P45["Dispatch High-Priority In-App & SMTP Alerts"]
+        P44 --> P46[("Record Status History & Audit Log")]
+        P43 -->|"No"| P47["Maintain Standard Queue"]
+    end

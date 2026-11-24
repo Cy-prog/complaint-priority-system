@@ -1,0 +1,20 @@
+flowchart TD
+    Start["Ticket Assigned with Priority"] --> Init["Calculate SLA Deadline (SLARecord)"]
+    Init --> Timer["SLA Countdown Active (e.g. Critical=6h, High=24h)"]
+    Timer --> Sweep["Automated Escalation Daemon Sweep (/api/sla/check-breaches)"]
+    
+    Sweep --> CheckResolved{"Is Complaint\nResolved?"}
+    CheckResolved -->|"Yes"| RecordSuccess["Calculate Resolution Latency & Compliance Rate"]
+    CheckResolved -->|"No"| CheckDeadline{"Has sla_deadline\nPassed?"}
+    
+    CheckDeadline -->|"No"| ContinueCountdown["Maintain Standard Active Monitoring"]
+    CheckDeadline -->|"Yes"| TriggerBreach["Flag is_breached = True"]
+    
+    TriggerBreach --> CheckLevel{"Current Priority < CRITICAL?"}
+    CheckLevel -->|"Yes"| PromotePriority["Promote Priority +1 Tier (e.g. HIGH -> CRITICAL)\nAdd +20 Urgency Score Penalty"]
+    CheckLevel -->|"Already CRITICAL"| MaxUrgency["Maintain CRITICAL\nFlag Overdue Emergency Status"]
+    
+    PromotePriority --> Alert["Dispatch High-Priority In-App & SMTP Alerts"]
+    MaxUrgency --> Alert
+    Alert --> Log["Append Immutable Entry in complaint_status_history & audit_logs"]
+    Log --> End["Supervisor Real-Time Notification"]

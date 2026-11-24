@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Submitted : Citizen lodges complaint via /portal or API
+    Submitted --> Analyzed : AI Pipeline executes (Category, Score, Safety Rule)
+    Analyzed --> Assigned : Load Balancer routes to Dept & Field Officer
+    Assigned --> In_Progress : Field Officer acknowledges & begins work
+    In_Progress --> Resolved : Officer resolves issue & uploads photo evidence
+    Resolved --> Closed : Citizen verifies resolution & marks Satisfied
+    Resolved --> Reopened : Citizen rejects resolution (reopen_count++)
+    Reopened --> In_Progress : Priority escalated for expedited supervisor action
+    Closed --> [*]

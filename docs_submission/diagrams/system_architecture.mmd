@@ -1,0 +1,44 @@
+flowchart TD
+    subgraph PresentationLayer ["Presentation Layer (Jinja2 + HTMX + Tailwind + Leaflet)"]
+        CP["Citizen Portal (/portal)"]
+        AC["Apex Command Hub (/)"]
+        DW["Dept Workspace (/department)"]
+        OW["Officer Queue (/officer)"]
+        GM["GIS Map (/map)"]
+        PD["Predictive Dashboard (/predictive)"]
+        TP["Public Transparency (/transparency)"]
+    end
+
+    subgraph SecurityLayer ["Security & Middleware Layer"]
+        AUTH["Timed Sessions (URLSafeTimedSerializer)"]
+        RBAC["4-Tier RBAC Enforcement"]
+        VAL["Secure Upload Validator (Magic Bytes & MIME)"]
+    end
+
+    subgraph CoreServices ["Application & Core Services"]
+        API["FastAPI ASGI REST API"]
+        SLA["SLA Escalation Daemon"]
+        WLB["Workforce Load Balancer"]
+        NOTIF["Notification Center (In-App + SMTP)"]
+        REP["Reporting Suite (CSV, Excel, PyMuPDF)"]
+    end
+
+    subgraph AISubsystem ["AI / ML Intelligence Subsystem"]
+        VEC["TF-IDF Vectorizer (1-2 N-grams)"]
+        SVC["Calibrated LinearSVC (96% Accuracy)"]
+        EXT["Entity & Hazard Extractor"]
+        PRIO["Multi-Factor Priority Scoring (0-100)"]
+        RULE["Deterministic Safety Invariant Guard"]
+        OLS["14-Day OLS Volume Forecaster (95% CI)"]
+        SIM["SentenceTransformer Duplicate Detection"]
+    end
+
+    subgraph PersistenceLayer ["Persistence Layer"]
+        DB[("SQLAlchemy Relational ORM (14 Tables)")]
+        AUDIT[("Transactional Immutable Audit Trail")]
+    end
+
+    PresentationLayer --> SecurityLayer
+    SecurityLayer --> CoreServices
+    CoreServices --> AISubsystem
+    CoreServices --> PersistenceLayer

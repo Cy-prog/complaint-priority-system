@@ -1,0 +1,26 @@
+flowchart TD
+    User["User / Citizen"] --> P1["1.0 Authentication & Session Control"]
+    P1 --> D1[("D1 Users Store")]
+    
+    User --> P2["2.0 Grievance Ingestion & Upload Validation"]
+    P2 --> D2[("D2 Complaints Store")]
+    
+    P2 --> P3["3.0 AI Triage & Safety Scoring Engine"]
+    P3 --> D3[("D3 AI Analysis Store")]
+    
+    P3 --> P4["4.0 SLA Deadline Engine & Escalation"]
+    P4 --> D4[("D4 SLA Records")]
+    
+    P4 --> P5["5.0 Departmental Routing & Load Balancer"]
+    P5 --> D1
+    
+    D2 --> P6["6.0 Predictive Modeling & GIS Clustering"]
+    P6 --> Out1["GIS Hotspot Map"]
+    P6 --> Out2["14-Day OLS Volume Forecast"]
+    
+    D2 --> P7["7.0 Reporting & Transparency Engine"]
+    P7 --> Out3["Public Portal (DPDP Safe)"]
+    P7 --> Out4["CSV / Excel / PDF Dossiers"]
+    
+    P4 --> D5[("D5 Audit Trail")]
+    P4 --> D6[("D6 Notifications")]
